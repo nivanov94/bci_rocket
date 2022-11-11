@@ -180,11 +180,6 @@ class Ui_MainWindow(object):
         self.game_frame.setObjectName("game_frame")
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.game_frame)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.graphicsView = QtWidgets.QGraphicsView(self.game_frame)
-        self.graphicsView.setStyleSheet("background-color: rgba(0, 0, 0, 0);\n"
-"border: none;")
-        self.graphicsView.setObjectName("graphicsView")
-        self.verticalLayout_7.addWidget(self.graphicsView)
         self.gridLayout_2.addWidget(self.game_frame, 1, 0, 1, 2)
         self.top_frame = QtWidgets.QFrame(self.game_page)
         self.top_frame.setStyleSheet("border-image: none;")
@@ -227,7 +222,6 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.lsl_marker_outlet_lineEdit, self.lsl_prediction_inlet_lineEdit)
         MainWindow.setTabOrder(self.lsl_prediction_inlet_lineEdit, self.btn_save_settings)
         MainWindow.setTabOrder(self.btn_save_settings, self.btn_back)
-        MainWindow.setTabOrder(self.btn_back, self.graphicsView)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

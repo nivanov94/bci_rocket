@@ -26,10 +26,13 @@ class MainWindow(QMainWindow):
             w.textChanged.connect(self.changeSettings)
         self.settings_valid = True
 
-        # setup graphics view
-        widgets.scene = QGraphicsScene()
-        widgets.scene.setSceneRect(0, 0, 1600, 900)
-        widgets.graphicsView.setScene(widgets.scene)
+        # setup opengl widget
+        widgets.oglWidget = OGLWidget(self)
+        widgets.game_frame.layout().addWidget(widgets.oglWidget)
+        self.game_update_timer = QTimer()
+        self.game_update_timer.setTimerType(Qt.PreciseTimer)
+        self.game_update_timer.setInterval(16)
+        self.game_update_timer.timeout.connect(widgets.oglWidget.update)
 
         self.show()
 
@@ -47,6 +50,7 @@ class MainWindow(QMainWindow):
             widgets.stackedWidget.setCurrentWidget(widgets.home_page)
         elif btnName == 'btn_back':
             widgets.stackedWidget.setCurrentWidget(widgets.home_page)
+            self.game_update_timer.stop()
 
     def changeSettings(self):
         settings_lineEdits = [widgets.task1_lineEdit, widgets.task2_lineEdit, widgets.task3_lineEdit, widgets.num_trials_lineEdit, widgets.lsl_marker_outlet_lineEdit, widgets.lsl_prediction_inlet_lineEdit]
@@ -71,34 +75,22 @@ class MainWindow(QMainWindow):
     def startTraining(self):
         widgets.stackedWidget.setCurrentWidget(widgets.game_page)
         print('start training')
-        
-        # initialize scene
-        widgets.scene.clear()
-
-        # widgets.ball_red = widgets.scene.addPixmap(QPixmap('images/ball_red.png').scaled(200, 200))
-        # widgets.ball_red.setOffset(-500, -100)
-
-        widgets.ball_green = widgets.scene.addPixmap(QPixmap('images/ball_green.png').scaled(200, 200))
-        widgets.ball_green.setOffset(0, 0)
-
-        # widgets.ball_blue = widgets.scene.addPixmap(QPixmap('images/ball_blue.png').scaled(200, 200))
-        # widgets.ball_blue.setOffset(500, -100)
-
+        self.game_update_timer.start()
 
     def startGame(self):
         widgets.stackedWidget.setCurrentWidget(widgets.game_page)
         print('start game')
-        widgets.scene.clear()
-        widgets.scene.addText('GAME')
+        self.game_update_timer.start()
 
-    def resizeEvent(self, event):
-        bounds = widgets.scene.itemsBoundingRect()
-        print(bounds)
+    def keyPressEvent(self, event):
+        # print('%s key pressed' % event.text())
 
-        # bounds.setWidth(bounds.width() * 0.9)
-        # bounds.setHeight(bounds.height() * 0.9)
-        # widgets.graphicsView.fitInView(bounds, Qt.KeepAspectRatio)
-        # widgets.graphicsView.centerOn(0,0)
+        if event.key() == Qt.Key_1:
+            widgets.oglWidget.drop_red = True
+        if event.key() == Qt.Key_2:
+            widgets.oglWidget.drop_green = True
+        if event.key() == Qt.Key_3:
+            widgets.oglWidget.drop_blue = True
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

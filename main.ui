@@ -364,16 +364,7 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <item>
-            <widget class="QGraphicsView" name="graphicsView">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgba(0, 0, 0, 0);
-border: none;</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <layout class="QVBoxLayout" name="verticalLayout_7"/>
          </widget>
         </item>
         <item row="0" column="0" colspan="2">
@@ -454,7 +445,6 @@ font-weight: 500;</string>
   <tabstop>lsl_prediction_inlet_lineEdit</tabstop>
   <tabstop>btn_save_settings</tabstop>
   <tabstop>btn_back</tabstop>
-  <tabstop>graphicsView</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>
