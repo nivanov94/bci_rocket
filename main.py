@@ -22,6 +22,9 @@ class MainWindow(QMainWindow):
 
         widgets.num_trials_lineEdit.setValidator(QIntValidator(3, 3000))
 
+        for w in widgets.centralwidget.findChildren(QComboBox):
+            w.textChanged.connect(self.changeSettings)
+        self.settings_valid = True
         for w in widgets.centralwidget.findChildren(QLineEdit):
             w.textChanged.connect(self.changeSettings)
         self.settings_valid = True
@@ -49,10 +52,9 @@ class MainWindow(QMainWindow):
             widgets.oglWidget.stop()
 
     def changeSettings(self):
-        settings_lineEdits = [widgets.task1_lineEdit, widgets.task2_lineEdit, widgets.task3_lineEdit, widgets.num_trials_lineEdit, widgets.lsl_marker_outlet_lineEdit, widgets.lsl_prediction_inlet_lineEdit]
-        
         self.settings_valid = True
-
+        
+        settings_lineEdits = [widgets.num_trials_lineEdit, widgets.lsl_marker_outlet_lineEdit, widgets.lsl_prediction_inlet_lineEdit]
         for w in settings_lineEdits:
             w_name = w.objectName().replace('_lineEdit', '')
             if w.text() == '':
@@ -60,6 +62,10 @@ class MainWindow(QMainWindow):
                 self.settings_valid = False
             else:
                 eval("widgets.%s_label.setStyleSheet('color: black;')" % w_name)
+
+        settings_comboBoxes = [widgets.task1_comboBox, widgets.task2_comboBox, widgets.task3_comboBox]
+        # for i in range(len(settings_comboBoxes)):
+            # if settings_comboBoxes[i].currentIndex
 
         if self.settings_valid:
             widgets.btn_save_settings.setText('Save')

@@ -101,6 +101,28 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item alignment="Qt::AlignHCenter">
+            <widget class="QPushButton" name="btn_baseline">
+             <property name="minimumSize">
+              <size>
+               <width>500</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>500</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>Baseline</string>
+             </property>
+            </widget>
+           </item>
+           <item alignment="Qt::AlignHCenter">
             <widget class="QPushButton" name="btn_training">
              <property name="minimumSize">
               <size>
@@ -216,99 +238,28 @@
            <property name="horizontalSpacing">
             <number>9</number>
            </property>
-           <item row="1" column="1">
+           <item row="2" column="1">
             <widget class="QLabel" name="task2_label">
              <property name="text">
               <string>Task 2:</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="2">
-            <widget class="QLineEdit" name="task3_lineEdit">
-             <property name="text">
-              <string>Task 3</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="task1_label">
-             <property name="text">
-              <string>Task 1:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="task3_label">
-             <property name="text">
-              <string>Task 3:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QLabel" name="num_trials_label">
              <property name="text">
               <string>Number of Trials:</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QLabel" name="lsl_marker_outlet_label">
-             <property name="text">
-              <string>LSL Marker Outlet:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
+           <item row="6" column="1">
             <widget class="QLabel" name="lsl_prediction_inlet_label">
              <property name="text">
               <string>LSL Prediction Inlet:</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="2">
-            <widget class="QLineEdit" name="num_trials_lineEdit">
-             <property name="text">
-              <string>15</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2" colspan="2">
-            <widget class="QLineEdit" name="task2_lineEdit">
-             <property name="text">
-              <string>Task 2</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2" colspan="2">
-            <widget class="QLineEdit" name="task1_lineEdit">
-             <property name="text">
-              <string>Task 1</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="2">
-            <widget class="QLineEdit" name="lsl_marker_outlet_lineEdit">
-             <property name="text">
-              <string>bci_hoops_marker</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="2">
+           <item row="6" column="2">
             <widget class="QLineEdit" name="lsl_prediction_inlet_lineEdit">
              <property name="text">
               <string>bcipy_prediction</string>
@@ -318,11 +269,253 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="1" colspan="2">
+           <item row="5" column="2">
+            <widget class="QLineEdit" name="lsl_marker_outlet_lineEdit">
+             <property name="text">
+              <string>bci_hoops_marker</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="task1_label">
+             <property name="text">
+              <string>Task 1:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1" colspan="2">
             <widget class="QPushButton" name="btn_save_settings">
              <property name="text">
               <string>Save</string>
              </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QComboBox" name="task1_comboBox">
+             <property name="currentIndex">
+              <number>4</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>Auditory Imagery</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Facial Imagery - Celebrity</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Facial Imagery - Family Member</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Foot</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Left Hand</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Right Hand</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Tongue</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Shape Rotation - Cube</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Shape Rotation - Complex Shape</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Subtraction - Simple</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Subtraction - Complex</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Word Generation</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="lsl_marker_outlet_label">
+             <property name="text">
+              <string>LSL Marker Outlet:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="task3_label">
+             <property name="text">
+              <string>Task 3:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QLineEdit" name="num_trials_lineEdit">
+             <property name="text">
+              <string>15</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QComboBox" name="task2_comboBox">
+             <property name="currentIndex">
+              <number>7</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>Auditory Imagery</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Facial Imagery - Celebrity</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Facial Imagery - Family Member</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Foot</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Left Hand</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Right Hand</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Tongue</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Shape Rotation - Cube</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Shape Rotation - Complex Shape</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Subtraction - Simple</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Subtraction - Complex</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Word Generation</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QComboBox" name="task3_comboBox">
+             <property name="currentIndex">
+              <number>2</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>Auditory Imagery</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Facial Imagery - Celebrity</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Facial Imagery - Family Member</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Foot</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Left Hand</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Right Hand</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Motor Imagery - Tongue</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Shape Rotation - Cube</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Shape Rotation - Complex Shape</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Subtraction - Simple</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Subtraction - Complex</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Word Generation</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>
@@ -437,9 +630,6 @@ font-weight: 500;</string>
   <tabstop>btn_training</tabstop>
   <tabstop>btn_start_game</tabstop>
   <tabstop>btn_settings</tabstop>
-  <tabstop>task1_lineEdit</tabstop>
-  <tabstop>task2_lineEdit</tabstop>
-  <tabstop>task3_lineEdit</tabstop>
   <tabstop>num_trials_lineEdit</tabstop>
   <tabstop>lsl_marker_outlet_lineEdit</tabstop>
   <tabstop>lsl_prediction_inlet_lineEdit</tabstop>
