@@ -83,14 +83,13 @@ class MainWindow(QMainWindow):
         self.game_update_timer.start()
 
     def keyPressEvent(self, event):
-        # print('%s key pressed' % event.text())
-
-        if event.key() == Qt.Key_1:
-            widgets.oglWidget.drop_red = True
-        if event.key() == Qt.Key_2:
-            widgets.oglWidget.drop_green = True
-        if event.key() == Qt.Key_3:
-            widgets.oglWidget.drop_blue = True
+        if widgets.stackedWidget.currentWidget() == widgets.game_page:
+            if event.key() == Qt.Key_1:
+                widgets.oglWidget.drop_red = True
+            if event.key() == Qt.Key_2:
+                widgets.oglWidget.drop_green = True
+            if event.key() == Qt.Key_3:
+                widgets.oglWidget.drop_blue = True
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
