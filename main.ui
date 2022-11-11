@@ -347,8 +347,8 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <item row="2" column="1">
-         <widget class="QFrame" name="task2_frame">
+        <item row="1" column="0" colspan="2">
+         <widget class="QFrame" name="game_frame">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -364,28 +364,19 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QGraphicsView" name="graphicsView">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(0, 0, 0, 0);
+border: none;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QFrame" name="task1_frame">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-image: none;</string>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="3">
+        <item row="0" column="0" colspan="2">
          <widget class="QFrame" name="top_frame">
           <property name="styleSheet">
            <string notr="true">border-image: none;</string>
@@ -417,8 +408,7 @@ font-weight: 500;</string>
            <item>
             <widget class="QLabel" name="game_title_label">
              <property name="styleSheet">
-              <string notr="true">font: 20pt &quot;Segoe UI&quot;;
-font-weight: 500;</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>BCI Hoops</string>
@@ -445,50 +435,6 @@ font-weight: 500;</string>
           </layout>
          </widget>
         </item>
-        <item row="1" column="0" colspan="3">
-         <widget class="QFrame" name="cue_frame">
-          <property name="styleSheet">
-           <string notr="true">border-image: none;</string>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QLabel" name="cue_label">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QFrame" name="task3_frame">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-image: none;</string>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
        </layout>
       </widget>
      </widget>
@@ -496,6 +442,20 @@ font-weight: 500;</string>
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>btn_training</tabstop>
+  <tabstop>btn_start_game</tabstop>
+  <tabstop>btn_settings</tabstop>
+  <tabstop>task1_lineEdit</tabstop>
+  <tabstop>task2_lineEdit</tabstop>
+  <tabstop>task3_lineEdit</tabstop>
+  <tabstop>num_trials_lineEdit</tabstop>
+  <tabstop>lsl_marker_outlet_lineEdit</tabstop>
+  <tabstop>lsl_prediction_inlet_lineEdit</tabstop>
+  <tabstop>btn_save_settings</tabstop>
+  <tabstop>btn_back</tabstop>
+  <tabstop>graphicsView</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
  </resources>

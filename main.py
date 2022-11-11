@@ -16,6 +16,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("BCI Hoops")
 
+        # setup UI elements
         for w in widgets.centralwidget.findChildren(QPushButton):
             w.clicked.connect(self.buttonClick)
 
@@ -25,17 +26,22 @@ class MainWindow(QMainWindow):
             w.textChanged.connect(self.changeSettings)
         self.settings_valid = True
 
+        # setup graphics view
+        widgets.scene = QGraphicsScene()
+        widgets.graphicsView.setScene(widgets.scene)
+
         self.show()
 
     def buttonClick(self):
         btn = self.sender()
         btnName = btn.objectName()
-        print('%s clicked' % btnName)
 
         if btnName == 'btn_settings':
             widgets.stackedWidget.setCurrentWidget(widgets.settings_page)
-        elif btnName in ['btn_training', 'btn_start_game']:
-            widgets.stackedWidget.setCurrentWidget(widgets.game_page)
+        elif btnName == 'btn_training':
+            self.startTraining()
+        elif btnName == 'btn_start_game':
+            self.startGame()
         elif btnName == 'btn_save_settings':
             widgets.stackedWidget.setCurrentWidget(widgets.home_page)
         elif btnName == 'btn_back':
@@ -60,6 +66,18 @@ class MainWindow(QMainWindow):
         else:
             widgets.btn_save_settings.setText('Invalid Settings')
             widgets.btn_save_settings.setEnabled(False)
+
+    def startTraining(self):
+        widgets.stackedWidget.setCurrentWidget(widgets.game_page)
+        print('start training')
+        widgets.scene.clear()
+        widgets.scene.addText('TRAINING')
+
+    def startGame(self):
+        widgets.stackedWidget.setCurrentWidget(widgets.game_page)
+        print('start game')
+        widgets.scene.clear()
+        widgets.scene.addText('GAME')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
