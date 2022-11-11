@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
 
         # setup graphics view
         widgets.scene = QGraphicsScene()
+        widgets.scene.setSceneRect(0, 0, 1600, 900)
         widgets.graphicsView.setScene(widgets.scene)
 
         self.show()
@@ -70,14 +71,34 @@ class MainWindow(QMainWindow):
     def startTraining(self):
         widgets.stackedWidget.setCurrentWidget(widgets.game_page)
         print('start training')
+        
+        # initialize scene
         widgets.scene.clear()
-        widgets.scene.addText('TRAINING')
+
+        # widgets.ball_red = widgets.scene.addPixmap(QPixmap('images/ball_red.png').scaled(200, 200))
+        # widgets.ball_red.setOffset(-500, -100)
+
+        widgets.ball_green = widgets.scene.addPixmap(QPixmap('images/ball_green.png').scaled(200, 200))
+        widgets.ball_green.setOffset(0, 0)
+
+        # widgets.ball_blue = widgets.scene.addPixmap(QPixmap('images/ball_blue.png').scaled(200, 200))
+        # widgets.ball_blue.setOffset(500, -100)
+
 
     def startGame(self):
         widgets.stackedWidget.setCurrentWidget(widgets.game_page)
         print('start game')
         widgets.scene.clear()
         widgets.scene.addText('GAME')
+
+    def resizeEvent(self, event):
+        bounds = widgets.scene.itemsBoundingRect()
+        print(bounds)
+
+        # bounds.setWidth(bounds.width() * 0.9)
+        # bounds.setHeight(bounds.height() * 0.9)
+        # widgets.graphicsView.fitInView(bounds, Qt.KeepAspectRatio)
+        # widgets.graphicsView.centerOn(0,0)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
