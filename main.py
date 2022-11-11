@@ -1,5 +1,5 @@
 import sys
-
+import math, random
 from modules import *
 
 widgets = None
@@ -29,10 +29,6 @@ class MainWindow(QMainWindow):
         # setup opengl widget
         widgets.oglWidget = OGLWidget(self)
         widgets.game_frame.layout().addWidget(widgets.oglWidget)
-        self.game_update_timer = QTimer()
-        self.game_update_timer.setTimerType(Qt.PreciseTimer)
-        self.game_update_timer.setInterval(16)
-        self.game_update_timer.timeout.connect(widgets.oglWidget.update)
 
         self.show()
 
@@ -50,7 +46,7 @@ class MainWindow(QMainWindow):
             widgets.stackedWidget.setCurrentWidget(widgets.home_page)
         elif btnName == 'btn_back':
             widgets.stackedWidget.setCurrentWidget(widgets.home_page)
-            self.game_update_timer.stop()
+            widgets.oglWidget.stop()
 
     def changeSettings(self):
         settings_lineEdits = [widgets.task1_lineEdit, widgets.task2_lineEdit, widgets.task3_lineEdit, widgets.num_trials_lineEdit, widgets.lsl_marker_outlet_lineEdit, widgets.lsl_prediction_inlet_lineEdit]
@@ -73,23 +69,22 @@ class MainWindow(QMainWindow):
             widgets.btn_save_settings.setEnabled(False)
 
     def startTraining(self):
-        widgets.stackedWidget.setCurrentWidget(widgets.game_page)
         print('start training')
-        self.game_update_timer.start()
+        widgets.stackedWidget.setCurrentWidget(widgets.game_page)
+        widgets.oglWidget.start(self)
 
     def startGame(self):
         widgets.stackedWidget.setCurrentWidget(widgets.game_page)
-        print('start game')
-        self.game_update_timer.start()
+        print('start game')        
 
     def keyPressEvent(self, event):
         if widgets.stackedWidget.currentWidget() == widgets.game_page:
             if event.key() == Qt.Key_1:
-                widgets.oglWidget.drop_red = True
+                widgets.oglWidget.drop_ball[0] = True
             if event.key() == Qt.Key_2:
-                widgets.oglWidget.drop_green = True
+                widgets.oglWidget.drop_ball[1] = True
             if event.key() == Qt.Key_3:
-                widgets.oglWidget.drop_blue = True
+                widgets.oglWidget.drop_ball[2] = True
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

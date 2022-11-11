@@ -1,14 +1,26 @@
 from PyQt5.QtWidgets import QOpenGLWidget
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QPainter, QOpenGLTexture, QImage, QColor
+from PyQt5.QtGui import QPainter, QOpenGLTexture, QImage, QColor, QFont
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import os
+import os, copy, math, random
 
 class OGLWidget(QOpenGLWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.setAttribute(Qt.WA_AlwaysStackOnTop)
+        self.colors = [QColor(255,0,0), QColor(0,255,0), QColor(0,0,255)]
+        self.font = QFont("Arial", 70, QFont.Bold, False)
+        self.cue_texts = ['','','']
+
+        self.update_timer = QTimer()
+        self.update_timer.setTimerType(Qt.PreciseTimer)
+        self.update_timer.setInterval(16)
+        self.update_timer.timeout.connect(self.update)
+
+        self.trial_timer = QTimer()
+        self.trial_timer.setTimerType(Qt.PreciseTimer)
+        self.trial_timer.setInterval(1000)
 
     def initializeGL(self):
         glClearColor(0,0,0,0)
@@ -35,17 +47,15 @@ class OGLWidget(QOpenGLWidget):
             self.images[f.replace('.png', '')] = im
 
         # initialize ball positions
-        self.start_pos_ball_red    = [-0.6, 0.7]
-        self.start_pos_ball_green  = [   0, 0.7]
-        self.start_pos_ball_blue   = [ 0.6, 0.7]
-        self.pos_ball_red    = self.start_pos_ball_red.copy()
-        self.pos_ball_green  = self.start_pos_ball_green.copy()
-        self.pos_ball_blue   = self.start_pos_ball_blue.copy()
-
-        # settings
-        self.drop_red = False
-        self.drop_green = False
-        self.drop_blue = False
+        self.pos_hoop = [[-0.6, -0.6],
+                         [   0, -0.6],
+                         [ 0.6, -0.6]]
+        self.start_pos_ball = [[-0.6, 0.7],
+                               [   0, 0.7],
+                               [ 0.6, 0.7]]
+        self.pos_ball = copy.deepcopy(self.start_pos_ball)
+        self.drop_ball = [False, False, False]
+        self.color_names = ['red', 'green', 'blue']
 
     def resizeGL(self, width, height):
         glMatrixMode(GL_PROJECTION)
@@ -53,34 +63,19 @@ class OGLWidget(QOpenGLWidget):
         glViewport(0,0,width,height)
 
     def paintGL(self):
-        self.drawImageCentered([-0.6, -0.6], [0.9, 0.9], self.images['hoop_red_bg'])
-        self.drawImageCentered([   0, -0.6], [0.9, 0.9], self.images['hoop_green_bg'])
-        self.drawImageCentered([ 0.6, -0.6], [0.9, 0.9], self.images['hoop_blue_bg'])
+        for i in range(3):
+            self.drawImageCentered(self.pos_hoop[i], [0.9, 0.9], self.images['hoop_%s_bg' % self.color_names[i]])
+            self.drawImageCentered(self.pos_ball[i], [0.5, 0.5], self.images['ball_%s' % self.color_names[i]])
+            self.drawImageCentered(self.pos_hoop[i], [0.9, 0.9], self.images['hoop_%s_fg' % self.color_names[i]])
 
-        self.drawImageCentered(self.pos_ball_red,   [0.5, 0.5], self.images['ball_red'])
-        self.drawImageCentered(self.pos_ball_green, [0.5, 0.5], self.images['ball_green'])
-        self.drawImageCentered(self.pos_ball_blue,  [0.5, 0.5], self.images['ball_blue'])
-        
-        self.drawImageCentered([-0.6, -0.6], [0.9, 0.9], self.images['hoop_red_fg'])
-        self.drawImageCentered([   0, -0.6], [0.9, 0.9], self.images['hoop_green_fg'])
-        self.drawImageCentered([ 0.6, -0.6], [0.9, 0.9], self.images['hoop_blue_fg'])
+            if self.drop_ball[i]:
+                self.pos_ball[i][1] -= 0.05
 
-        if self.drop_red:
-            self.pos_ball_red[1] -= 0.05
-        if self.drop_green:
-            self.pos_ball_green[1] -= 0.05
-        if self.drop_blue:
-            self.pos_ball_blue[1] -= 0.05
+            if self.pos_ball[i][1] < -1.5:
+                self.drop_ball[i] = False
+                self.pos_ball[i] = copy.deepcopy(self.start_pos_ball[i])
 
-        if self.pos_ball_red[1] < -1.5:
-            self.drop_red = False
-            self.pos_ball_red = self.start_pos_ball_red.copy()
-        if self.pos_ball_green[1] < -1.5:
-            self.drop_green = False
-            self.pos_ball_green = self.start_pos_ball_green.copy()
-        if self.pos_ball_blue[1] < -1.5:
-            self.drop_blue = False
-            self.pos_ball_blue = self.start_pos_ball_blue.copy()
+        self.drawText([-1, 0.3, 1, -0.1], self.cue_texts[0], self.colors[0])
 
     def drawImageCentered(self, center, size, image):
         # center = [center_x, center_y], size = [size_x, size_y]
@@ -125,7 +120,7 @@ class OGLWidget(QOpenGLWidget):
         glDisable(GL_BLEND)
         glDepthMask(GL_TRUE)
 
-    def drawText(self, positions, text):
+    def drawText(self, positions, text, color):
         # convert positions to rect
         pos = []
         pos.append(int((positions[0] + 1.) / 2. * self.width()))
@@ -137,8 +132,23 @@ class OGLWidget(QOpenGLWidget):
         # draw text at rect
         self.painter = QPainter(self)
         self.painter.setRenderHint(QPainter.TextAntialiasing)
-        self.painter.setPen(self.text_color)
+        self.painter.setPen(color)
         self.font.setPointSizeF(abs(pos[3]) * 0.3)
         self.painter.setFont(self.font)
         self.painter.drawText(rect, Qt.AlignHCenter | Qt.AlignVCenter, text)
         self.painter.end()
+
+    def start(self, parent):
+        self.ui = parent.ui
+        # generate randomized trials
+        num_trials = int(self.ui.num_trials_lineEdit.text())
+        self.trials = [0,1,2] * math.ceil(num_trials / 3)
+        self.trials = self.trials[:num_trials]
+        random.shuffle(self.trials)
+        print('trials: ', self.trials)
+        # widgets.oglWidget.cue_texts = [widgets.task1_lineEdit.text(), widgets.task2_lineEdit.text(), widgets.task3_lineEdit.text()]
+
+        self.update_timer.start()
+
+    def stop(self):
+        self.update_timer.stop()
