@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         widgets.num_trials_lineEdit.setValidator(QIntValidator(3, 3000))
 
         for w in widgets.centralwidget.findChildren(QComboBox):
-            w.textChanged.connect(self.changeSettings)
+            w.currentTextChanged.connect(self.changeSettings)
         self.settings_valid = True
         for w in widgets.centralwidget.findChildren(QLineEdit):
             w.textChanged.connect(self.changeSettings)
@@ -35,11 +35,15 @@ class MainWindow(QMainWindow):
 
         self.show()
 
+        widgets.num_trials_lineEdit.setText('6')
+
     def buttonClick(self):
         btn = self.sender()
         btnName = btn.objectName()
 
-        if btnName == 'btn_settings':
+        if btnName == 'btn_baseline':
+            self.startBaseline()
+        elif btnName == 'btn_settings':
             widgets.stackedWidget.setCurrentWidget(widgets.settings_page)
         elif btnName == 'btn_training':
             self.startTraining()
@@ -48,8 +52,8 @@ class MainWindow(QMainWindow):
         elif btnName == 'btn_save_settings':
             widgets.stackedWidget.setCurrentWidget(widgets.home_page)
         elif btnName == 'btn_back':
-            widgets.stackedWidget.setCurrentWidget(widgets.home_page)
             widgets.oglWidget.stop()
+            widgets.stackedWidget.setCurrentWidget(widgets.home_page)
 
     def changeSettings(self):
         self.settings_valid = True
@@ -64,8 +68,15 @@ class MainWindow(QMainWindow):
                 eval("widgets.%s_label.setStyleSheet('color: black;')" % w_name)
 
         settings_comboBoxes = [widgets.task1_comboBox, widgets.task2_comboBox, widgets.task3_comboBox]
-        # for i in range(len(settings_comboBoxes)):
-            # if settings_comboBoxes[i].currentIndex
+        comboBox_index = [cb.currentIndex() for cb in settings_comboBoxes]
+        duplicate_index = {x for x in comboBox_index if comboBox_index.count(x) > 1}
+        for w in settings_comboBoxes:
+            w_name = w.objectName().replace('_comboBox', '')
+            if w.currentIndex() in duplicate_index:
+                eval("widgets.%s_label.setStyleSheet('color: red;')" % w_name)
+                self.settings_valid = False
+            else:
+                eval("widgets.%s_label.setStyleSheet('color: black;')" % w_name)
 
         if self.settings_valid:
             widgets.btn_save_settings.setText('Save')
@@ -74,14 +85,19 @@ class MainWindow(QMainWindow):
             widgets.btn_save_settings.setText('Invalid Settings')
             widgets.btn_save_settings.setEnabled(False)
 
+    def startBaseline(self):
+        print('start baseline')
+        widgets.stackedWidget.setCurrentWidget(widgets.game_page)
+        widgets.oglWidget.startBaseline(self)
+
     def startTraining(self):
         print('start training')
         widgets.stackedWidget.setCurrentWidget(widgets.game_page)
-        widgets.oglWidget.start(self)
+        widgets.oglWidget.startTraining(self)
 
     def startGame(self):
         widgets.stackedWidget.setCurrentWidget(widgets.game_page)
-        print('start game')        
+        print('start game')
 
     def keyPressEvent(self, event):
         if widgets.stackedWidget.currentWidget() == widgets.game_page:

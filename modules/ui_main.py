@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(867, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setStyleSheet("QWidget{\n"
 "    font: 25pt \"Segoe UI\";\n"
@@ -237,10 +237,11 @@ class Ui_MainWindow(object):
         self.game_title_label.setStyleSheet("")
         self.game_title_label.setAlignment(QtCore.Qt.AlignCenter)
         self.game_title_label.setObjectName("game_title_label")
-        self.horizontalLayout.addWidget(self.game_title_label)
+        self.horizontalLayout.addWidget(self.game_title_label, 0, QtCore.Qt.AlignHCenter)
         self.score_label = QtWidgets.QLabel(self.top_frame)
         self.score_label.setStyleSheet("font: 20pt \"Segoe UI\";\n"
 "font-weight: 500;")
+        self.score_label.setText("")
         self.score_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.score_label.setObjectName("score_label")
         self.horizontalLayout.addWidget(self.score_label)
@@ -319,5 +320,4 @@ class Ui_MainWindow(object):
         self.task3_comboBox.setItemText(11, _translate("MainWindow", "Word Generation"))
         self.btn_back.setText(_translate("MainWindow", "Back"))
         self.game_title_label.setText(_translate("MainWindow", "BCI Hoops"))
-        self.score_label.setText(_translate("MainWindow", "Score: 0"))
 from . resources_rc import *

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>867</width>
     <height>600</height>
    </rect>
   </property>
@@ -589,7 +589,7 @@ font-weight: 500;</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="game_title_label">
              <property name="styleSheet">
               <string notr="true"/>
@@ -609,7 +609,7 @@ font-weight: 500;</string>
 font-weight: 500;</string>
              </property>
              <property name="text">
-              <string>Score: 0</string>
+              <string/>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
