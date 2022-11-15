@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         global widgets
         widgets = self.ui
 
-        self.setWindowTitle("BCI Hoops")
+        self.setWindowTitle("BCI Rocket")
 
         # setup UI elements
         for w in widgets.centralwidget.findChildren(QPushButton):
@@ -22,16 +22,22 @@ class MainWindow(QMainWindow):
 
         widgets.num_trials_lineEdit.setValidator(QIntValidator(3, 3000))
 
-        for w in widgets.centralwidget.findChildren(QComboBox):
-            w.currentTextChanged.connect(self.changeSettings)
-        self.settings_valid = True
-        for w in widgets.centralwidget.findChildren(QLineEdit):
-            w.textChanged.connect(self.changeSettings)
-        self.settings_valid = True
+        # for w in widgets.centralwidget.findChildren(QComboBox):
+        #     w.currentTextChanged.connect(self.changeSettings)
+        # self.settings_valid = True
+        # for w in widgets.centralwidget.findChildren(QLineEdit):
+        #     w.textChanged.connect(self.changeSettings)
+        # self.settings_valid = True
 
         # setup opengl widget
         widgets.oglWidget = OGLWidget(self)
         widgets.game_frame.layout().addWidget(widgets.oglWidget)
+
+        # setup
+        self.settings_lineEdits = [widgets.num_trials_lineEdit, widgets.lsl_marker_outlet_lineEdit, widgets.lsl_prediction_inlet_lineEdit]
+        self.settings_lineEdits_labels = [widgets.num_trials_label, widgets.lsl_marker_outlet_label, widgets.lsl_prediction_inlet_label]
+        self.settings_comboBoxes = [widgets.task1_comboBox, widgets.task2_comboBox, widgets.task3_comboBox]
+        self.settings_comboBoxes_labels = [widgets.task1_label, widgets.task2_label, widgets.task3_label]
 
         self.show()
 
@@ -50,40 +56,37 @@ class MainWindow(QMainWindow):
         elif btnName == 'btn_start_game':
             self.startGame()
         elif btnName == 'btn_save_settings':
-            widgets.stackedWidget.setCurrentWidget(widgets.home_page)
+            self.saveSettings()
         elif btnName == 'btn_back':
             widgets.oglWidget.stop()
             widgets.stackedWidget.setCurrentWidget(widgets.home_page)
 
-    def changeSettings(self):
+    def saveSettings(self):
         self.settings_valid = True
         
-        settings_lineEdits = [widgets.num_trials_lineEdit, widgets.lsl_marker_outlet_lineEdit, widgets.lsl_prediction_inlet_lineEdit]
-        for w in settings_lineEdits:
-            w_name = w.objectName().replace('_lineEdit', '')
-            if w.text() == '':
-                eval("widgets.%s_label.setStyleSheet('color: red;')" % w_name)
+        for i in range(len(self.settings_lineEdits)):
+            if self.settings_lineEdits[i].text() == '':
+                self.settings_lineEdits_labels[i].setStyleSheet('color: red;')
                 self.settings_valid = False
             else:
-                eval("widgets.%s_label.setStyleSheet('color: black;')" % w_name)
+                self.settings_lineEdits_labels[i].setStyleSheet('color: black;')
 
-        settings_comboBoxes = [widgets.task1_comboBox, widgets.task2_comboBox, widgets.task3_comboBox]
-        comboBox_index = [cb.currentIndex() for cb in settings_comboBoxes]
+        comboBox_index = [cb.currentIndex() for cb in self.settings_comboBoxes]
         duplicate_index = {x for x in comboBox_index if comboBox_index.count(x) > 1}
-        for w in settings_comboBoxes:
-            w_name = w.objectName().replace('_comboBox', '')
-            if w.currentIndex() in duplicate_index:
-                eval("widgets.%s_label.setStyleSheet('color: red;')" % w_name)
+        for i in range(len(self.settings_comboBoxes)):
+            if self.settings_comboBoxes[i].currentIndex() in duplicate_index:
+                self.settings_comboBoxes_labels[i].setStyleSheet('color: red;')
                 self.settings_valid = False
             else:
-                eval("widgets.%s_label.setStyleSheet('color: black;')" % w_name)
+                self.settings_comboBoxes_labels[i].setStyleSheet('color: black;')
 
         if self.settings_valid:
             widgets.btn_save_settings.setText('Save')
             widgets.btn_save_settings.setEnabled(True)
+            widgets.stackedWidget.setCurrentWidget(widgets.home_page)
         else:
-            widgets.btn_save_settings.setText('Invalid Settings')
-            widgets.btn_save_settings.setEnabled(False)
+            widgets.btn_save_settings.setText('Save - Invalid Settings')
+            widgets.btn_save_settings.setEnabled(True)
 
     def startBaseline(self):
         print('start baseline')
@@ -97,18 +100,19 @@ class MainWindow(QMainWindow):
 
     def startGame(self):
         widgets.stackedWidget.setCurrentWidget(widgets.game_page)
-        print('start game')
+        widgets.oglWidget.startGame(self)
 
     def keyPressEvent(self, event):
         if widgets.stackedWidget.currentWidget() == widgets.game_page:
             if event.key() == Qt.Key_1:
-                widgets.oglWidget.drop_ball[0] = True
+                widgets.oglWidget.selectTask(0)
             if event.key() == Qt.Key_2:
-                widgets.oglWidget.drop_ball[1] = True
+                widgets.oglWidget.selectTask(1)
             if event.key() == Qt.Key_3:
-                widgets.oglWidget.drop_ball[2] = True
+                widgets.oglWidget.selectTask(2)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("bci_rocket.ico"))
     window = MainWindow()
     sys.exit(app.exec_())

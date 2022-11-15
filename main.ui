@@ -80,7 +80,7 @@ QLabel{
            <item>
             <widget class="QLabel" name="title_label">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:72pt; font-weight:600; color:#ffe6fc;&quot;&gt;BCI Hoops&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:72pt; font-weight:600; color:#ffe6fc;&quot;&gt;BCI Rocket&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="textFormat">
               <enum>Qt::RichText</enum>
@@ -298,7 +298,7 @@ QComboBox{
               <string notr="true">border: 2px solid rgba(157,25,143,255);</string>
              </property>
              <property name="text">
-              <string>bci_hoops_marker</string>
+              <string>bci_rocket_marker</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -655,13 +655,23 @@ font-weight: 500;</string>
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QFrame" name="frame">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
            <item alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="game_title_label">
              <property name="styleSheet">
               <string notr="true">color: rgb(255,230,252);</string>
              </property>
              <property name="text">
-              <string>BCI Hoops</string>
+              <string>BCI Rocket</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -671,10 +681,25 @@ font-weight: 500;</string>
            <item>
             <widget class="QLabel" name="score_label">
              <property name="styleSheet">
-              <string notr="true">color: rgb(255,230,252);</string>
+              <string notr="true">color: rgb(255,230,252);
+font-size: 15pt;</string>
              </property>
              <property name="text">
-              <string/>
+              <string>Score: 45/45</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="trial_label">
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255,230,252);
+font-size: 15pt;</string>
+             </property>
+             <property name="text">
+              <string>Trial: 45/45</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

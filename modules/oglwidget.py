@@ -4,7 +4,8 @@ from PyQt5.QtGui import QPainter, QOpenGLTexture, QImage, QColor, QFont
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import os, copy, math, random
-from pylsl import StreamInfo, StreamOutlet
+from pylsl import StreamInfo, StreamOutlet, StreamInlet, ContinuousResolver
+import numpy as np
 
 class OGLWidget(QOpenGLWidget):
     def __init__(self, parent):
@@ -22,6 +23,11 @@ class OGLWidget(QOpenGLWidget):
         self.update_timer.setInterval(16)
         self.update_timer.timeout.connect(self.update)
 
+        self.lsl_pull_timer = QTimer()
+        self.lsl_pull_timer.setTimerType(Qt.PreciseTimer)
+        self.lsl_pull_timer.setInterval(200)
+        self.lsl_pull_timer.timeout.connect(self.pull_lsl)
+
         self.baseline_cue_duration = 3
         self.baseline_duration = 2
         self.cue_duration = 2
@@ -29,18 +35,17 @@ class OGLWidget(QOpenGLWidget):
         self.break_duration = 2
         self.cue_text = 'cue text'
 
-        # initialize ball positions
-        self.pos_hoop = [[-0.6, -0.6],
-                         [   0, -0.6],
-                         [ 0.6, -0.6]]
-        self.start_pos_ball = [[-0.6, 0.7],
-                               [   0, 0.7],
-                               [ 0.6, 0.7]]
-        self.pos_ball = copy.deepcopy(self.start_pos_ball)
-        self.drop_ball = [False, False, False]
-        self.color_names = ['red', 'green', 'blue']
+        self.scene = ''
+        self.stage = ''
+        self.num_start_simple = 0
+        self.num_subtract_simple = 0
+        self.num_start_complex = 0
+        self.num_subtract_complex = 0
+        self.word = ''
+        self.word_categories = ['Animals', 'Places', 'Shapes', 'Sport', 'Food']
+        self.current_task = -1
 
-        self.word_categories = ['Animals', 'Places', 'Vehicles', 'Sport', 'Food']
+        self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
 
     def initializeGL(self):
         glClearColor(0,0,0,0)
@@ -74,6 +79,8 @@ class OGLWidget(QOpenGLWidget):
             self.baselineScene()
         elif self.scene == 'training':
             self.trainingScene()
+        elif self.scene == 'game':
+            self.gameScene()
 
     def baselineScene(self):
         if self.stage == 'cue':
@@ -82,111 +89,194 @@ class OGLWidget(QOpenGLWidget):
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
 
     def trainingScene(self):
-        # Rest
         if self.stage == 'cue_rest':
             self.drawTextCentered([0,0], [2, 0.5], 'Rest', self.text_color)
         elif self.stage == 'rest':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Auditory Imagery
         elif self.stage == 'cue_Auditory Imagery':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['music'])
-        elif self.stage == 'Auditory Imagery':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Facial Imagery - Celebrity
         elif self.stage == 'cue_Facial Imagery - Celebrity':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_celebrity'])
             self.drawTextCentered([0,0.35], [2, 0.5], 'Celebrity', self.text_color)
-        elif self.stage == 'Facial Imagery - Celebrity':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Facial Imagery - Family Member
         elif self.stage == 'cue_Facial Imagery - Family Member':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_family'])
             self.drawTextCentered([0,0.35], [2, 0.5], 'Family member', self.text_color)
-        elif self.stage == 'Facial Imagery - Family Member':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Motor Imagery - Foot
         elif self.stage == 'cue_Motor Imagery - Foot':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['foot'])
-        elif self.stage == 'Motor Imagery - Foot':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Motor Imagery - Left Hand
         elif self.stage == 'cue_Motor Imagery - Left Hand':
             self.drawImageCentered([0,0], [0.8, 0.8], self.images['left_hand'])
-        elif self.stage == 'Motor Imagery - Left Hand':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Motor Imagery - Right Hand
         elif self.stage == 'cue_Motor Imagery - Right Hand':
             self.drawImageCentered([0,0], [0.8, 0.8], self.images['right_hand'])
-        elif self.stage == 'Motor Imagery - Right Hand':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Motor Imagery - Tongue
         elif self.stage == 'cue_Motor Imagery - Tongue':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['tongue'])
-        elif self.stage == 'Motor Imagery - Tongue':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Shape Rotation - Cube
         elif self.stage == 'cue_Shape Rotation - Cube':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['cube'])
-        elif self.stage == 'Shape Rotation - Cube':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Shape Rotation - Complex Shape
         elif self.stage == 'cue_Shape Rotation - Complex Shape':
             self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
-        elif self.stage == 'Shape Rotation - Complex Shape':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Subtraction - Simple
         elif self.stage == 'cue_Subtraction - Simple':
-            num_start = random.randint(51, 100)
-            num_subtract = random.randint(3,10)
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (num_start, num_subtract, num_subtract, num_subtract), self.text_color)
-        elif self.stage == 'Subtraction - Simple':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Subtraction - Complex
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
         elif self.stage == 'cue_Subtraction - Complex':
-            num_start = random.randint(100, 200)
-            num_subtract = random.randint(3,10)
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (num_start, num_subtract, num_subtract, num_subtract), self.text_color)
-        elif self.stage == 'Subtraction - Complex':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Word Generation
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
         elif self.stage == 'cue_Word Generation':
-            self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % random.choice(self.word_categories), self.text_color)
-        elif self.stage == 'Word Generation':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-
-        # Others
+            self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % self.word, self.text_color)
         elif self.stage == 'break':
             return
         else:
-            self.drawTextCentered([0,0], [2, 0.5], self.stage, self.text_color)
+            for i in range(3):
+                # draw prompts
+                if self.stage == self.tasks[i]:
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline_green'])
+                else:
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline'])
+                if self.tasks[i] == 'Auditory Imagery':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['music'])
+                elif self.tasks[i] == 'Facial Imagery - Celebrity':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.65], [0.3, 0.3], self.images['face_celebrity'])
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.4], [0.3, 0.3], 'Celebrity', self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Facial Imagery - Family Member':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.65], [0.3, 0.3], self.images['face_family'])
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.4], [0.3, 0.3], 'Family member', self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Motor Imagery - Foot':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['foot'])
+                elif self.tasks[i] == 'Motor Imagery - Left Hand':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['left_hand'])
+                elif self.tasks[i] == 'Motor Imagery - Right Hand':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['right_hand'])
+                elif self.tasks[i] == 'Motor Imagery - Tongue':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['tongue'])
+                elif self.tasks[i] == 'Shape Rotation - Cube':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.33, 0.33], self.images['cube'])
+                elif self.tasks[i] == 'Shape Rotation - Complex Shape':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['complex_shape'])
+                elif self.tasks[i] == 'Subtraction - Simple':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Subtraction - Complex':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Word Generation':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
-    # def gameScene(self):
-    #     if self.stage == 'cue'
-        # for i in range(3):
-        #     self.drawImageCentered(self.pos_hoop[i], [0.9, 0.9], self.images['hoop_%s_bg' % self.color_names[i]])
-        #     self.drawImageCentered(self.pos_ball[i], [0.5, 0.5], self.images['ball_%s' % self.color_names[i]])
-        #     self.drawImageCentered(self.pos_hoop[i], [0.9, 0.9], self.images['hoop_%s_fg' % self.color_names[i]])
+                # draw rocket
+                if self.rocket_positions[i][1] == 0:
+                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                else:
+                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
+                
+                # update rocket position
+                if self.stage == self.tasks[i]:
+                    self.rocket_positions[i][1] += 0.01
+    def gameScene(self):
+        if self.stage == 'cue_rest':
+            self.drawTextCentered([0,0], [2, 0.5], 'Rest', self.text_color)
+        elif self.stage == 'rest':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+        elif self.stage == 'cue_Auditory Imagery':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['music'])
+        elif self.stage == 'cue_Facial Imagery - Celebrity':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_celebrity'])
+            self.drawTextCentered([0,0.35], [2, 0.5], 'Celebrity', self.text_color)
+        elif self.stage == 'cue_Facial Imagery - Family Member':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_family'])
+            self.drawTextCentered([0,0.35], [2, 0.5], 'Family member', self.text_color)
+        elif self.stage == 'cue_Motor Imagery - Foot':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['foot'])
+        elif self.stage == 'cue_Motor Imagery - Left Hand':
+            self.drawImageCentered([0,0], [0.8, 0.8], self.images['left_hand'])
+        elif self.stage == 'cue_Motor Imagery - Right Hand':
+            self.drawImageCentered([0,0], [0.8, 0.8], self.images['right_hand'])
+        elif self.stage == 'cue_Motor Imagery - Tongue':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['tongue'])
+        elif self.stage == 'cue_Shape Rotation - Cube':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['cube'])
+        elif self.stage == 'cue_Shape Rotation - Complex Shape':
+            self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
+        elif self.stage == 'cue_Subtraction - Simple':
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
+        elif self.stage == 'cue_Subtraction - Complex':
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
+        elif self.stage == 'cue_Word Generation':
+            self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % self.word, self.text_color)
+        elif self.stage == 'break':
+            for i in range(3):
+                # draw prompts
+                if self.stage == self.tasks[i]:
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline_green'])
+                else:
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline'])
+                if self.tasks[i] == 'Auditory Imagery':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['music'])
+                elif self.tasks[i] == 'Facial Imagery - Celebrity':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.65], [0.3, 0.3], self.images['face_celebrity'])
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.4], [0.3, 0.3], 'Celebrity', self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Facial Imagery - Family Member':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.65], [0.3, 0.3], self.images['face_family'])
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.4], [0.3, 0.3], 'Family member', self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Motor Imagery - Foot':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['foot'])
+                elif self.tasks[i] == 'Motor Imagery - Left Hand':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['left_hand'])
+                elif self.tasks[i] == 'Motor Imagery - Right Hand':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['right_hand'])
+                elif self.tasks[i] == 'Motor Imagery - Tongue':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['tongue'])
+                elif self.tasks[i] == 'Shape Rotation - Cube':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.33, 0.33], self.images['cube'])
+                elif self.tasks[i] == 'Shape Rotation - Complex Shape':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['complex_shape'])
+                elif self.tasks[i] == 'Subtraction - Simple':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Subtraction - Complex':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Word Generation':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
-        #     if self.drop_ball[i]:
-        #         self.pos_ball[i][1] -= 0.05
+                # draw rocket
+                if self.rocket_positions[i][1] == 0:
+                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                else:
+                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
 
-        #     if self.pos_ball[i][1] < -1.5:
-        #         self.drop_ball[i] = False
-        #         self.pos_ball[i] = copy.deepcopy(self.start_pos_ball[i])
+                # update rocket position
+                if i == self.current_task:
+                    self.rocket_positions[i][1] += 0.02
+        else:
+            for i in range(3):
+                # draw prompts
+                if self.stage == self.tasks[i]:
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline_green'])
+                else:
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline'])
+                if self.tasks[i] == 'Auditory Imagery':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['music'])
+                elif self.tasks[i] == 'Facial Imagery - Celebrity':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.65], [0.3, 0.3], self.images['face_celebrity'])
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.4], [0.3, 0.3], 'Celebrity', self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Facial Imagery - Family Member':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.65], [0.3, 0.3], self.images['face_family'])
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.4], [0.3, 0.3], 'Family member', self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Motor Imagery - Foot':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['foot'])
+                elif self.tasks[i] == 'Motor Imagery - Left Hand':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['left_hand'])
+                elif self.tasks[i] == 'Motor Imagery - Right Hand':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['right_hand'])
+                elif self.tasks[i] == 'Motor Imagery - Tongue':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['tongue'])
+                elif self.tasks[i] == 'Shape Rotation - Cube':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.33, 0.33], self.images['cube'])
+                elif self.tasks[i] == 'Shape Rotation - Complex Shape':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['complex_shape'])
+                elif self.tasks[i] == 'Subtraction - Simple':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Subtraction - Complex':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Word Generation':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
-        # self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.colors[0])
+                # draw rocket
+                if self.rocket_positions[i][1] == 0:
+                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                else:
+                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
 
     def drawImageCentered(self, center, size, image):
         # center = [center_x, center_y], size = [size_x, size_y]
@@ -299,7 +389,17 @@ class OGLWidget(QOpenGLWidget):
         random.shuffle(self.trials)
         print('trials: ', self.trials)
         self.current_trial = 0
-        self.ui.score_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
+        self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
+        self.ui.score_label.setText('')
+
+        if 'Subtraction - Simple' in self.tasks:
+            self.num_start_simple = random.randint(51, 100)
+            self.num_subtract_simple = random.randint(3,10)
+        if 'Subtraction - Complex' in self.tasks:
+            self.num_start_complex = random.randint(100, 200)
+            self.num_subtract_complex = random.randint(3,10)
+        if 'Word Generation' in self.tasks:
+            self.word = random.choice(self.word_categories)
 
         self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
         self.stream_outlet = StreamOutlet(self.stream_info)
@@ -315,11 +415,20 @@ class OGLWidget(QOpenGLWidget):
 
     def training_timer_timeout(self):
         self.timer.stop()
+        self.update_timer.stop()
         if self.stage == 'cue_rest':
             self.stage = 'rest'
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.task_duration * 1000)
         elif self.stage == 'rest':
+            if self.tasks[self.trials[self.current_trial]] == 'Subtraction - Simple':
+                self.num_start_simple = random.randint(51, 100)
+                self.num_subtract_simple = random.randint(3,10)
+            elif self.tasks[self.trials[self.current_trial]] == 'Subtraction - Complex':
+                self.num_start_complex = random.randint(100, 200)
+                self.num_subtract_complex = random.randint(3,10)
+            elif self.tasks[self.trials[self.current_trial]] == 'Word Generation':
+                self.word = random.choice(self.word_categories)
             self.stage = 'cue_%s' % self.tasks[self.trials[self.current_trial]]
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.cue_duration * 1000)
@@ -327,13 +436,15 @@ class OGLWidget(QOpenGLWidget):
             self.stage = self.tasks[self.trials[self.current_trial]]
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.task_duration * 1000)
+            self.update_timer.start()
+            self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
         elif self.stage == self.tasks[self.trials[self.current_trial]]:
             self.stage = 'break'
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.break_duration * 1000)
         elif self.stage == 'break':
             self.current_trial += 1
-            self.ui.score_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
+            self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
             if self.current_trial < len(self.trials):
                 self.stage = 'cue_rest'
                 self.stream_outlet.push_sample([self.stage])
@@ -342,15 +453,122 @@ class OGLWidget(QOpenGLWidget):
                 self.stop()
         self.update()
 
+    def startGame(self, parent):
+        self.ui = parent.ui
+
+        # get tasks
+        self.tasks = [self.ui.task1_comboBox.currentText(), self.ui.task2_comboBox.currentText(), self.ui.task3_comboBox.currentText()]
+
+        # generate randomized trials
+        num_trials = int(self.ui.num_trials_lineEdit.text())
+        self.trials = [0,1,2] * math.ceil(num_trials / 3)
+        self.trials = self.trials[:num_trials]
+        random.shuffle(self.trials)
+        print('trials: ', self.trials)
+        self.current_trial = 0
+        self.current_score = 0
+        self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
+        self.ui.score_label.setText('Score: %d / %d' % (self.current_score, len(self.trials)))
+
+        if 'Subtraction - Simple' in self.tasks:
+            self.num_start_simple = random.randint(51, 100)
+            self.num_subtract_simple = random.randint(3,10)
+        if 'Subtraction - Complex' in self.tasks:
+            self.num_start_complex = random.randint(100, 200)
+            self.num_subtract_complex = random.randint(3,10)
+        if 'Word Generation' in self.tasks:
+            self.word = random.choice(self.word_categories)
+
+        # LSL
+        self.resolver = ContinuousResolver()
+        self.streams = self.resolver.results()
+        self.stream_inlet = None
+        for info in self.streams:
+            if info.name() == self.ui.lsl_prediction_inlet_lineEdit.text():
+                self.stream_inlet = StreamInlet(info)
+                break
+        if not self.stream_inlet:
+            print('Cannot find LSL inlet stream: %s' % self.ui.lsl_prediction_inlet_lineEdit.text())
+            
+        self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
+        self.stream_outlet = StreamOutlet(self.stream_info)
+        print("LSL Marker Outlet Stream Initialized")
+        for i in range(3):
+            self.stream_outlet.push_sample(['initialize game'])
+
+        self.current_task = -1
+        self.scene = 'game'
+        self.stage = 'cue_rest'
+        self.stream_outlet.push_sample([self.stage])
+        self.timer.timeout.connect(self.game_timer_timeout)
+        self.timer.start(self.cue_duration * 1000)
+
+    def game_timer_timeout(self):
+        self.timer.stop()
+        self.update_timer.stop()
+        if self.stage == 'cue_rest':
+            self.stage = 'rest'
+            self.stream_outlet.push_sample([self.stage])
+            self.timer.start(self.task_duration * 1000)
+        elif self.stage == 'rest':
+            if self.tasks[self.trials[self.current_trial]] == 'Subtraction - Simple':
+                self.num_start_simple = random.randint(51, 100)
+                self.num_subtract_simple = random.randint(3,10)
+            elif self.tasks[self.trials[self.current_trial]] == 'Subtraction - Complex':
+                self.num_start_complex = random.randint(100, 200)
+                self.num_subtract_complex = random.randint(3,10)
+            elif self.tasks[self.trials[self.current_trial]] == 'Word Generation':
+                self.word = random.choice(self.word_categories)
+            self.current_task = -1
+            self.stage = 'cue_%s' % self.tasks[self.trials[self.current_trial]]
+            self.stream_outlet.push_sample([self.stage])
+            self.timer.start(self.cue_duration * 1000)
+        elif self.stage == 'cue_%s' % self.tasks[self.trials[self.current_trial]]:
+            self.stage = self.tasks[self.trials[self.current_trial]]
+            self.stream_outlet.push_sample([self.stage])
+            self.timer.start(self.task_duration * 1000)
+            self.update_timer.start()
+            self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
+        elif self.stage == self.tasks[self.trials[self.current_trial]]:
+            self.stage = 'break'
+            self.stream_outlet.push_sample([self.stage])
+            self.timer.start(self.break_duration * 1000)
+            self.update_timer.start()
+            self.lsl_pull_timer.stop()
+
+            print('current task = %d' % self.current_task)
+            if self.current_task == self.trials[self.current_trial]:
+                self.current_score += 1
+                self.ui.score_label.setText('Score: %d / %d' % (self.current_score, len(self.trials)))
+        elif self.stage == 'break':
+            self.current_trial += 1
+            self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
+            if self.current_trial < len(self.trials):
+                self.stage = 'cue_rest'
+                self.stream_outlet.push_sample([self.stage])
+                self.timer.start(self.cue_duration * 1000)
+            else:
+                self.stop()
+        self.update()
+
+    def selectTask(self, taskNum):
+        if not taskNum in [0,1,2]:
+            return
+        self.current_task = taskNum
+        print('task = %d' % self.current_task)
+
+    def pull_lsl(self):
+        if self.stream_inlet:
+            sample, _ = self.stream_inlet.pull_sample()
+            if sample[0].startswith('task='):
+                self.selectTask(sample[0].replace('task=', ''))
+
     def stop(self):
         self.timer.stop()
+        self.lsl_pull_timer.stop()
         try:
             self.timer.timeout.disconnect()
         except:
             pass
         self.update_timer.stop()
-        try:
-            self.update_timer.timeout.disconnect()
-        except:
-            pass
         self.ui.stackedWidget.setCurrentWidget(self.ui.home_page)
