@@ -11,8 +11,8 @@ class OGLWidget(QOpenGLWidget):
         super().__init__(parent)
         self.setAttribute(Qt.WA_AlwaysStackOnTop)
         self.colors = [QColor(255,0,0), QColor(0,255,0), QColor(0,0,255)]
-        self.black = QColor(0,0,0)
-        self.font = QFont("Arial", 70, QFont.Bold, False)
+        self.text_color = QColor(255,255,255);
+        self.font = QFont("Arial", 50, QFont.Bold, False)
 
         self.timer = QTimer()
         self.timer.setTimerType(Qt.PreciseTimer)
@@ -24,8 +24,8 @@ class OGLWidget(QOpenGLWidget):
 
         self.baseline_cue_duration = 3
         self.baseline_duration = 2
-        self.cue_duration = 1
-        self.task_duration = 5
+        self.cue_duration = 2
+        self.task_duration = 4
         self.break_duration = 2
         self.cue_text = 'cue text'
 
@@ -39,6 +39,8 @@ class OGLWidget(QOpenGLWidget):
         self.pos_ball = copy.deepcopy(self.start_pos_ball)
         self.drop_ball = [False, False, False]
         self.color_names = ['red', 'green', 'blue']
+
+        self.word_categories = ['Animals', 'Places', 'Vehicles', 'Sport', 'Food']
 
     def initializeGL(self):
         glClearColor(0,0,0,0)
@@ -75,92 +77,100 @@ class OGLWidget(QOpenGLWidget):
 
     def baselineScene(self):
         if self.stage == 'cue':
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawTextCentered([0,0], [2, 0.5], self.cue_text, self.text_color)
         elif self.stage == 'fixation':
-            self.drawText([-0.5, 0.5, 0.5, -0.5], '+', self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
 
     def trainingScene(self):
-        # cue
+        # Rest
         if self.stage == 'cue_rest':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Auditory Imagery':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Facial Imagery - Celebrity':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Facial Imagery - Family Member':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Motor Imagery - Foot':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Motor Imagery - Left Hand':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Motor Imagery - Right Hand':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Motor Imagery - Tongue':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Shape Rotation - Cube':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Shape Rotation - Complex Shape':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Subtraction - Simple':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Subtraction - Complex':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-        elif self.stage == 'cue_Word Generation':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
-
-        # Tasks
+            self.drawTextCentered([0,0], [2, 0.5], 'Rest', self.text_color)
         elif self.stage == 'rest':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Auditory Imagery
+        elif self.stage == 'cue_Auditory Imagery':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['music'])
         elif self.stage == 'Auditory Imagery':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Facial Imagery - Celebrity
+        elif self.stage == 'cue_Facial Imagery - Celebrity':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_celebrity'])
+            self.drawTextCentered([0,0.35], [2, 0.5], 'Celebrity', self.text_color)
         elif self.stage == 'Facial Imagery - Celebrity':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Facial Imagery - Family Member
+        elif self.stage == 'cue_Facial Imagery - Family Member':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_family'])
+            self.drawTextCentered([0,0.35], [2, 0.5], 'Family member', self.text_color)
         elif self.stage == 'Facial Imagery - Family Member':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Motor Imagery - Foot
+        elif self.stage == 'cue_Motor Imagery - Foot':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['foot'])
         elif self.stage == 'Motor Imagery - Foot':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Motor Imagery - Left Hand
+        elif self.stage == 'cue_Motor Imagery - Left Hand':
+            self.drawImageCentered([0,0], [0.8, 0.8], self.images['left_hand'])
         elif self.stage == 'Motor Imagery - Left Hand':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Motor Imagery - Right Hand
+        elif self.stage == 'cue_Motor Imagery - Right Hand':
+            self.drawImageCentered([0,0], [0.8, 0.8], self.images['right_hand'])
         elif self.stage == 'Motor Imagery - Right Hand':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Motor Imagery - Tongue
+        elif self.stage == 'cue_Motor Imagery - Tongue':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['tongue'])
         elif self.stage == 'Motor Imagery - Tongue':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Shape Rotation - Cube
+        elif self.stage == 'cue_Shape Rotation - Cube':
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['cube'])
         elif self.stage == 'Shape Rotation - Cube':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Shape Rotation - Complex Shape
+        elif self.stage == 'cue_Shape Rotation - Complex Shape':
+            self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
         elif self.stage == 'Shape Rotation - Complex Shape':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Subtraction - Simple
+        elif self.stage == 'cue_Subtraction - Simple':
+            num_start = random.randint(51, 100)
+            num_subtract = random.randint(3,10)
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (num_start, num_subtract, num_subtract, num_subtract), self.text_color)
         elif self.stage == 'Subtraction - Simple':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Subtraction - Complex
+        elif self.stage == 'cue_Subtraction - Complex':
+            num_start = random.randint(100, 200)
+            num_subtract = random.randint(3,10)
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (num_start, num_subtract, num_subtract, num_subtract), self.text_color)
         elif self.stage == 'Subtraction - Complex':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Word Generation
+        elif self.stage == 'cue_Word Generation':
+            self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % random.choice(self.word_categories), self.text_color)
         elif self.stage == 'Word Generation':
-            self.cue_text = self.stage
-            self.drawText([-1, 0.3, 1, -0.1], self.cue_text, self.black)
+            self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
+
+        # Others
+        elif self.stage == 'break':
+            return
+        else:
+            self.drawTextCentered([0,0], [2, 0.5], self.stage, self.text_color)
 
     # def gameScene(self):
     #     if self.stage == 'cue'
@@ -221,7 +231,15 @@ class OGLWidget(QOpenGLWidget):
         glDisable(GL_BLEND)
         glDepthMask(GL_TRUE)
 
-    def drawText(self, positions, text, color):
+    def drawTextCentered(self, center, size, text, color, font=None, scale=None):
+        positions = [center[0] - size[0]/2, center[1] + size[1]/2, center[0] + size[0]/2, center[1] - size[1]/2]
+        self.drawText(positions, text, color, font, scale)
+
+    def drawText(self, positions, text, color, font=None, scale=None):
+        if not font:
+            font = self.font
+        if not scale:
+            scale = 0.3
         # convert positions to rect
         pos = []
         pos.append(int((positions[0] + 1.) / 2. * self.width()))
@@ -234,8 +252,8 @@ class OGLWidget(QOpenGLWidget):
         self.painter = QPainter(self)
         self.painter.setRenderHint(QPainter.TextAntialiasing)
         self.painter.setPen(color)
-        self.font.setPointSizeF(abs(pos[3]) * 0.3)
-        self.painter.setFont(self.font)
+        font.setPointSizeF(abs(pos[3]) * scale)
+        self.painter.setFont(font)
         self.painter.drawText(rect, Qt.AlignHCenter | Qt.AlignVCenter, text)
         self.painter.end()
 

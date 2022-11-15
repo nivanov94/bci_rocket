@@ -21,18 +21,23 @@ class Ui_MainWindow(object):
 "    font-weight: 500;\n"
 "}\n"
 "\n"
-"#stackedWidget QPushButton {\n"
-"    border: 2px solid rgb(203, 204, 200);\n"
+"QPushButton {\n"
+"    border: 2px solid rgba(157,25,143,255);\n"
 "    border-radius: 5px;    \n"
-"    background-color: rgb(203, 204, 200);\n"
+"    background-color: rgba(0,0,0,0);\n"
+"    color: rgb(255,230,252);\n"
 "}\n"
-"#stackedWidget QPushButton:hover {\n"
-"    background-color: rgb(203, 204, 200);\n"
-"    border: 2px solid rgb(152, 153, 150);\n"
+"QPushButton:hover {\n"
+"    background-color: rgba(157,25,143,255);\n"
+"    border: 2px solid rgba(157,25,143,255);\n"
 "}\n"
-"#stackedWidget QPushButton:pressed {    \n"
-"    background-color: rgb(152, 153, 150);\n"
-"    border: 2px solid rgb(152, 153, 150);\n"
+"QPushButton:pressed {    \n"
+"    background-color: rgba(157,25,143,255);\n"
+"    border: 2px solid rgba(157,25,143,255);\n"
+"}\n"
+"\n"
+"QLabel{\n"
+"    color: color: rgb(255,230,252);\n"
 "}")
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -40,7 +45,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
-        self.stackedWidget.setStyleSheet("border-image: url(:/images/images/background.jpg) 0 0 0 0 stretch stretch;")
+        self.stackedWidget.setStyleSheet("border-image: url(:/images/images/background.jpg);")
         self.stackedWidget.setObjectName("stackedWidget")
         self.home_page = QtWidgets.QWidget()
         self.home_page.setStyleSheet("")
@@ -114,7 +119,13 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.settings_body_frame.sizePolicy().hasHeightForWidth())
         self.settings_body_frame.setSizePolicy(sizePolicy)
-        self.settings_body_frame.setStyleSheet("border-image: none;")
+        self.settings_body_frame.setStyleSheet("border-image: none;\n"
+"color: rgb(255, 230, 252);\n"
+"background-color: rgba(0, 0, 0, 0);\n"
+"\n"
+"QComboBox{\n"
+"    border: 2px solid rgba(157,25,143,255);\n"
+"}")
         self.settings_body_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.settings_body_frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.settings_body_frame.setObjectName("settings_body_frame")
@@ -122,29 +133,51 @@ class Ui_MainWindow(object):
         self.gridLayout.setHorizontalSpacing(9)
         self.gridLayout.setObjectName("gridLayout")
         self.task2_label = QtWidgets.QLabel(self.settings_body_frame)
+        self.task2_label.setStyleSheet("")
         self.task2_label.setObjectName("task2_label")
         self.gridLayout.addWidget(self.task2_label, 2, 1, 1, 1)
         self.num_trials_label = QtWidgets.QLabel(self.settings_body_frame)
+        self.num_trials_label.setStyleSheet("")
         self.num_trials_label.setObjectName("num_trials_label")
         self.gridLayout.addWidget(self.num_trials_label, 4, 1, 1, 1)
         self.lsl_prediction_inlet_label = QtWidgets.QLabel(self.settings_body_frame)
+        self.lsl_prediction_inlet_label.setStyleSheet("")
         self.lsl_prediction_inlet_label.setObjectName("lsl_prediction_inlet_label")
         self.gridLayout.addWidget(self.lsl_prediction_inlet_label, 6, 1, 1, 1)
         self.lsl_prediction_inlet_lineEdit = QtWidgets.QLineEdit(self.settings_body_frame)
+        self.lsl_prediction_inlet_lineEdit.setStyleSheet("border: 2px solid rgba(157,25,143,255);")
         self.lsl_prediction_inlet_lineEdit.setAlignment(QtCore.Qt.AlignCenter)
         self.lsl_prediction_inlet_lineEdit.setObjectName("lsl_prediction_inlet_lineEdit")
         self.gridLayout.addWidget(self.lsl_prediction_inlet_lineEdit, 6, 2, 1, 1)
         self.lsl_marker_outlet_lineEdit = QtWidgets.QLineEdit(self.settings_body_frame)
+        self.lsl_marker_outlet_lineEdit.setStyleSheet("border: 2px solid rgba(157,25,143,255);")
         self.lsl_marker_outlet_lineEdit.setAlignment(QtCore.Qt.AlignCenter)
         self.lsl_marker_outlet_lineEdit.setObjectName("lsl_marker_outlet_lineEdit")
         self.gridLayout.addWidget(self.lsl_marker_outlet_lineEdit, 5, 2, 1, 1)
         self.task1_label = QtWidgets.QLabel(self.settings_body_frame)
+        self.task1_label.setStyleSheet("")
+        self.task1_label.setTextFormat(QtCore.Qt.RichText)
         self.task1_label.setObjectName("task1_label")
         self.gridLayout.addWidget(self.task1_label, 1, 1, 1, 1)
         self.btn_save_settings = QtWidgets.QPushButton(self.settings_body_frame)
+        self.btn_save_settings.setStyleSheet("QPushButton {\n"
+"    border: 2px solid rgba(157,25,143,255);\n"
+"    border-radius: 5px;    \n"
+"    background-color: rgba(0,0,0,0);\n"
+"    color: rgb(255,230,252);\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background-color: rgba(157,25,143,255);\n"
+"    border: 2px solid rgba(157,25,143,255);\n"
+"}\n"
+"QPushButton:pressed {    \n"
+"    background-color: rgba(157,25,143,255);\n"
+"    border: 2px solid rgba(157,25,143,255);\n"
+"}")
         self.btn_save_settings.setObjectName("btn_save_settings")
         self.gridLayout.addWidget(self.btn_save_settings, 7, 1, 1, 2)
         self.task1_comboBox = QtWidgets.QComboBox(self.settings_body_frame)
+        self.task1_comboBox.setStyleSheet("border: 2px solid rgba(157,25,143,255);")
         self.task1_comboBox.setObjectName("task1_comboBox")
         self.task1_comboBox.addItem("")
         self.task1_comboBox.addItem("")
@@ -160,16 +193,20 @@ class Ui_MainWindow(object):
         self.task1_comboBox.addItem("")
         self.gridLayout.addWidget(self.task1_comboBox, 1, 2, 1, 1)
         self.lsl_marker_outlet_label = QtWidgets.QLabel(self.settings_body_frame)
+        self.lsl_marker_outlet_label.setStyleSheet("")
         self.lsl_marker_outlet_label.setObjectName("lsl_marker_outlet_label")
         self.gridLayout.addWidget(self.lsl_marker_outlet_label, 5, 1, 1, 1)
         self.task3_label = QtWidgets.QLabel(self.settings_body_frame)
+        self.task3_label.setStyleSheet("")
         self.task3_label.setObjectName("task3_label")
         self.gridLayout.addWidget(self.task3_label, 3, 1, 1, 1)
         self.num_trials_lineEdit = QtWidgets.QLineEdit(self.settings_body_frame)
+        self.num_trials_lineEdit.setStyleSheet("border: 2px solid rgba(157,25,143,255);")
         self.num_trials_lineEdit.setAlignment(QtCore.Qt.AlignCenter)
         self.num_trials_lineEdit.setObjectName("num_trials_lineEdit")
         self.gridLayout.addWidget(self.num_trials_lineEdit, 4, 2, 1, 1)
         self.task2_comboBox = QtWidgets.QComboBox(self.settings_body_frame)
+        self.task2_comboBox.setStyleSheet("border: 2px solid rgba(157,25,143,255);")
         self.task2_comboBox.setObjectName("task2_comboBox")
         self.task2_comboBox.addItem("")
         self.task2_comboBox.addItem("")
@@ -185,6 +222,7 @@ class Ui_MainWindow(object):
         self.task2_comboBox.addItem("")
         self.gridLayout.addWidget(self.task2_comboBox, 2, 2, 1, 1)
         self.task3_comboBox = QtWidgets.QComboBox(self.settings_body_frame)
+        self.task3_comboBox.setStyleSheet("border: 2px solid rgba(157,25,143,255);")
         self.task3_comboBox.setObjectName("task3_comboBox")
         self.task3_comboBox.addItem("")
         self.task3_comboBox.addItem("")
@@ -234,13 +272,12 @@ class Ui_MainWindow(object):
         self.btn_back.setObjectName("btn_back")
         self.horizontalLayout.addWidget(self.btn_back, 0, QtCore.Qt.AlignLeft)
         self.game_title_label = QtWidgets.QLabel(self.top_frame)
-        self.game_title_label.setStyleSheet("")
+        self.game_title_label.setStyleSheet("color: rgb(255,230,252);")
         self.game_title_label.setAlignment(QtCore.Qt.AlignCenter)
         self.game_title_label.setObjectName("game_title_label")
         self.horizontalLayout.addWidget(self.game_title_label, 0, QtCore.Qt.AlignHCenter)
         self.score_label = QtWidgets.QLabel(self.top_frame)
-        self.score_label.setStyleSheet("font: 20pt \"Segoe UI\";\n"
-"font-weight: 500;")
+        self.score_label.setStyleSheet("color: rgb(255,230,252);")
         self.score_label.setText("")
         self.score_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.score_label.setObjectName("score_label")
@@ -266,18 +303,18 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.title_label.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:72pt; font-weight:600;\">BCI Hoops</span></p></body></html>"))
+        self.title_label.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:72pt; font-weight:600; color:#ffe6fc;\">BCI Hoops</span></p></body></html>"))
         self.btn_baseline.setText(_translate("MainWindow", "Baseline"))
         self.btn_training.setText(_translate("MainWindow", "Training"))
         self.btn_start_game.setText(_translate("MainWindow", "Start Game"))
         self.btn_settings.setText(_translate("MainWindow", "Settings"))
-        self.settings_title_label.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:50pt; font-weight:600;\">Settings</span></p></body></html>"))
-        self.task2_label.setText(_translate("MainWindow", "Task 2:"))
-        self.num_trials_label.setText(_translate("MainWindow", "Number of Trials:"))
-        self.lsl_prediction_inlet_label.setText(_translate("MainWindow", "LSL Prediction Inlet:"))
+        self.settings_title_label.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:50pt; font-weight:600; color:#ffe6fc;\">Settings</span></p></body></html>"))
+        self.task2_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" color:#ffe6fc;\">Task 2:</span></p></body></html>"))
+        self.num_trials_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" color:#ffe6fc;\">Number of Trials:</span></p></body></html>"))
+        self.lsl_prediction_inlet_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" color:#ffe6fc;\">LSL Prediction Inlet:</span></p></body></html>"))
         self.lsl_prediction_inlet_lineEdit.setText(_translate("MainWindow", "bcipy_prediction"))
         self.lsl_marker_outlet_lineEdit.setText(_translate("MainWindow", "bci_hoops_marker"))
-        self.task1_label.setText(_translate("MainWindow", "Task 1:"))
+        self.task1_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" color:#ffe6fc;\">Task 1:</span></p></body></html>"))
         self.btn_save_settings.setText(_translate("MainWindow", "Save"))
         self.task1_comboBox.setItemText(0, _translate("MainWindow", "Auditory Imagery"))
         self.task1_comboBox.setItemText(1, _translate("MainWindow", "Facial Imagery - Celebrity"))
@@ -291,8 +328,8 @@ class Ui_MainWindow(object):
         self.task1_comboBox.setItemText(9, _translate("MainWindow", "Subtraction - Simple"))
         self.task1_comboBox.setItemText(10, _translate("MainWindow", "Subtraction - Complex"))
         self.task1_comboBox.setItemText(11, _translate("MainWindow", "Word Generation"))
-        self.lsl_marker_outlet_label.setText(_translate("MainWindow", "LSL Marker Outlet:"))
-        self.task3_label.setText(_translate("MainWindow", "Task 3:"))
+        self.lsl_marker_outlet_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" color:#ffe6fc;\">LSL Marker Outlet:</span></p></body></html>"))
+        self.task3_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" color:#ffe6fc;\">Task 3:</span></p></body></html>"))
         self.num_trials_lineEdit.setText(_translate("MainWindow", "15"))
         self.task2_comboBox.setItemText(0, _translate("MainWindow", "Auditory Imagery"))
         self.task2_comboBox.setItemText(1, _translate("MainWindow", "Facial Imagery - Celebrity"))

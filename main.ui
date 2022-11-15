@@ -20,18 +20,23 @@
 	font-weight: 500;
 }
 
-#stackedWidget QPushButton {
-	border: 2px solid rgb(203, 204, 200);
+QPushButton {
+	border: 2px solid rgba(157,25,143,255);
 	border-radius: 5px;	
-	background-color: rgb(203, 204, 200);
+	background-color: rgba(0,0,0,0);
+	color: rgb(255,230,252);
 }
-#stackedWidget QPushButton:hover {
-	background-color: rgb(203, 204, 200);
-	border: 2px solid rgb(152, 153, 150);
+QPushButton:hover {
+	background-color: rgba(157,25,143,255);
+	border: 2px solid rgba(157,25,143,255);
 }
-#stackedWidget QPushButton:pressed {	
-	background-color: rgb(152, 153, 150);
-	border: 2px solid rgb(152, 153, 150);
+QPushButton:pressed {	
+	background-color: rgba(157,25,143,255);
+	border: 2px solid rgba(157,25,143,255);
+}
+
+QLabel{
+	color: color: rgb(255,230,252);
 }</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -53,7 +58,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="styleSheet">
-       <string notr="true">border-image: url(:/images/images/background.jpg) 0 0 0 0 stretch stretch;</string>
+       <string notr="true">border-image: url(:/images/images/background.jpg);</string>
       </property>
       <widget class="QWidget" name="home_page">
        <property name="styleSheet">
@@ -75,7 +80,7 @@
            <item>
             <widget class="QLabel" name="title_label">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:72pt; font-weight:600;&quot;&gt;BCI Hoops&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:72pt; font-weight:600; color:#ffe6fc;&quot;&gt;BCI Hoops&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="textFormat">
               <enum>Qt::RichText</enum>
@@ -204,7 +209,7 @@
            <item>
             <widget class="QLabel" name="settings_title_label">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:50pt; font-weight:600;&quot;&gt;Settings&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:50pt; font-weight:600; color:#ffe6fc;&quot;&gt;Settings&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="textFormat">
               <enum>Qt::RichText</enum>
@@ -226,7 +231,13 @@
            </sizepolicy>
           </property>
           <property name="styleSheet">
-           <string notr="true">border-image: none;</string>
+           <string notr="true">border-image: none;
+color: rgb(255, 230, 252);
+background-color: rgba(0, 0, 0, 0);
+
+QComboBox{
+	border: 2px solid rgba(157,25,143,255);
+}</string>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -240,27 +251,39 @@
            </property>
            <item row="2" column="1">
             <widget class="QLabel" name="task2_label">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="text">
-              <string>Task 2:</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffe6fc;&quot;&gt;Task 2:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
            <item row="4" column="1">
             <widget class="QLabel" name="num_trials_label">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="text">
-              <string>Number of Trials:</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffe6fc;&quot;&gt;Number of Trials:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
            <item row="6" column="1">
             <widget class="QLabel" name="lsl_prediction_inlet_label">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="text">
-              <string>LSL Prediction Inlet:</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffe6fc;&quot;&gt;LSL Prediction Inlet:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
            <item row="6" column="2">
             <widget class="QLineEdit" name="lsl_prediction_inlet_lineEdit">
+             <property name="styleSheet">
+              <string notr="true">border: 2px solid rgba(157,25,143,255);</string>
+             </property>
              <property name="text">
               <string>bcipy_prediction</string>
              </property>
@@ -271,6 +294,9 @@
            </item>
            <item row="5" column="2">
             <widget class="QLineEdit" name="lsl_marker_outlet_lineEdit">
+             <property name="styleSheet">
+              <string notr="true">border: 2px solid rgba(157,25,143,255);</string>
+             </property>
              <property name="text">
               <string>bci_hoops_marker</string>
              </property>
@@ -281,13 +307,35 @@
            </item>
            <item row="1" column="1">
             <widget class="QLabel" name="task1_label">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="text">
-              <string>Task 1:</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffe6fc;&quot;&gt;Task 1:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::RichText</enum>
              </property>
             </widget>
            </item>
            <item row="7" column="1" colspan="2">
             <widget class="QPushButton" name="btn_save_settings">
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+	border: 2px solid rgba(157,25,143,255);
+	border-radius: 5px;	
+	background-color: rgba(0,0,0,0);
+	color: rgb(255,230,252);
+}
+QPushButton:hover {
+	background-color: rgba(157,25,143,255);
+	border: 2px solid rgba(157,25,143,255);
+}
+QPushButton:pressed {	
+	background-color: rgba(157,25,143,255);
+	border: 2px solid rgba(157,25,143,255);
+}</string>
+             </property>
              <property name="text">
               <string>Save</string>
              </property>
@@ -295,6 +343,9 @@
            </item>
            <item row="1" column="2">
             <widget class="QComboBox" name="task1_comboBox">
+             <property name="styleSheet">
+              <string notr="true">border: 2px solid rgba(157,25,143,255);</string>
+             </property>
              <property name="currentIndex">
               <number>4</number>
              </property>
@@ -362,20 +413,29 @@
            </item>
            <item row="5" column="1">
             <widget class="QLabel" name="lsl_marker_outlet_label">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="text">
-              <string>LSL Marker Outlet:</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffe6fc;&quot;&gt;LSL Marker Outlet:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
            <item row="3" column="1">
             <widget class="QLabel" name="task3_label">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="text">
-              <string>Task 3:</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffe6fc;&quot;&gt;Task 3:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
            <item row="4" column="2">
             <widget class="QLineEdit" name="num_trials_lineEdit">
+             <property name="styleSheet">
+              <string notr="true">border: 2px solid rgba(157,25,143,255);</string>
+             </property>
              <property name="text">
               <string>15</string>
              </property>
@@ -386,6 +446,9 @@
            </item>
            <item row="2" column="2">
             <widget class="QComboBox" name="task2_comboBox">
+             <property name="styleSheet">
+              <string notr="true">border: 2px solid rgba(157,25,143,255);</string>
+             </property>
              <property name="currentIndex">
               <number>7</number>
              </property>
@@ -453,6 +516,9 @@
            </item>
            <item row="3" column="2">
             <widget class="QComboBox" name="task3_comboBox">
+             <property name="styleSheet">
+              <string notr="true">border: 2px solid rgba(157,25,143,255);</string>
+             </property>
              <property name="currentIndex">
               <number>2</number>
              </property>
@@ -592,7 +658,7 @@ font-weight: 500;</string>
            <item alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="game_title_label">
              <property name="styleSheet">
-              <string notr="true"/>
+              <string notr="true">color: rgb(255,230,252);</string>
              </property>
              <property name="text">
               <string>BCI Hoops</string>
@@ -605,8 +671,7 @@ font-weight: 500;</string>
            <item>
             <widget class="QLabel" name="score_label">
              <property name="styleSheet">
-              <string notr="true">font: 20pt &quot;Segoe UI&quot;;
-font-weight: 500;</string>
+              <string notr="true">color: rgb(255,230,252);</string>
              </property>
              <property name="text">
               <string/>
