@@ -1,0 +1,9 @@
+name: bci_rocket
+dependencies:
+- python=3.7
+- pip
+- pip:
+  - pylsl
+  - pyqt5-tools
+  - pyopengl
+  - numpy
