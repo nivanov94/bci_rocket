@@ -29,7 +29,7 @@ class OGLWidget(QOpenGLWidget):
         self.lsl_pull_timer.timeout.connect(self.pull_lsl)
 
         self.baseline_cue_duration = 3
-        self.baseline_duration = 2
+        self.baseline_duration = 120
         self.cue_duration = 2
         self.task_duration = 4
         self.break_duration = 2
@@ -488,7 +488,10 @@ class OGLWidget(QOpenGLWidget):
                 self.stream_inlet = StreamInlet(info)
                 break
         if not self.stream_inlet:
+            self.ui.lsl_stream_label.setText('LSL stream not found')
             print('Cannot find LSL inlet stream: %s' % self.ui.lsl_prediction_inlet_lineEdit.text())
+        else:
+            self.ui.lsl_stream_label.setText('')
             
         self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
         self.stream_outlet = StreamOutlet(self.stream_info)
