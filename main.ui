@@ -655,7 +655,47 @@ font-weight: 500;</string>
              </property>
             </widget>
            </item>
-           <item alignment="Qt::AlignLeft">
+           <item>
+            <widget class="QPushButton" name="btn_pause">
+             <property name="minimumSize">
+              <size>
+               <width>60</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 15pt &quot;Segoe UI&quot;;
+font-weight: 500;</string>
+             </property>
+             <property name="text">
+              <string>Pause</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="top_frame_spacer">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item alignment="Qt::AlignHCenter">
+            <widget class="QLabel" name="game_title_label">
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255,230,252);</string>
+             </property>
+             <property name="text">
+              <string>BCI Rocket</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="lsl_stream_label">
              <property name="font">
               <font>
@@ -675,19 +715,6 @@ font-size: 12pt;</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item alignment="Qt::AlignHCenter">
-            <widget class="QLabel" name="game_title_label">
-             <property name="styleSheet">
-              <string notr="true">color: rgb(255,230,252);</string>
-             </property>
-             <property name="text">
-              <string>BCI Rocket</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>

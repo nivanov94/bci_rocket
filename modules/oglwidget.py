@@ -4,7 +4,7 @@ from PyQt5.QtGui import QPainter, QOpenGLTexture, QImage, QColor, QFont
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import os, copy, math, random
-from pylsl import StreamInfo, StreamOutlet, StreamInlet, ContinuousResolver
+from pylsl import StreamInfo, StreamOutlet, StreamInlet, ContinuousResolver, resolve_bypred
 import numpy as np
 
 class OGLWidget(QOpenGLWidget):
@@ -114,13 +114,54 @@ class OGLWidget(QOpenGLWidget):
         elif self.stage == 'cue_Shape Rotation - Complex Shape':
             self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
         elif self.stage == 'cue_Subtraction - Simple':
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
         elif self.stage == 'cue_Subtraction - Complex':
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
         elif self.stage == 'cue_Word Generation':
             self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % self.word, self.text_color)
         elif self.stage == 'break':
-            return
+            for i in range(3):
+                # draw prompts
+                if self.stage == self.tasks[i]:
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline_green'])
+                else:
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline'])
+                if self.tasks[i] == 'Auditory Imagery':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['music'])
+                elif self.tasks[i] == 'Facial Imagery - Celebrity':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.65], [0.3, 0.3], self.images['face_celebrity'])
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.4], [0.3, 0.3], 'Celebrity', self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Facial Imagery - Family Member':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.65], [0.3, 0.3], self.images['face_family'])
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.4], [0.3, 0.3], 'Family member', self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Motor Imagery - Foot':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['foot'])
+                elif self.tasks[i] == 'Motor Imagery - Left Hand':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['left_hand'])
+                elif self.tasks[i] == 'Motor Imagery - Right Hand':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['right_hand'])
+                elif self.tasks[i] == 'Motor Imagery - Tongue':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], self.images['tongue'])
+                elif self.tasks[i] == 'Shape Rotation - Cube':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.33, 0.33], self.images['cube'])
+                elif self.tasks[i] == 'Shape Rotation - Complex Shape':
+                    self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['complex_shape'])
+                elif self.tasks[i] == 'Subtraction - Simple':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Subtraction - Complex':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
+                elif self.tasks[i] == 'Word Generation':
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
+
+                # draw rocket
+                if self.rocket_positions[i][1] == 0:
+                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                else:
+                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
+
+                # update rocket position
+                if i == self.trials[self.current_trial]:
+                    self.rocket_positions[i][1] += 0.02
         else:
             for i in range(3):
                 # draw prompts
@@ -149,9 +190,9 @@ class OGLWidget(QOpenGLWidget):
                 elif self.tasks[i] == 'Shape Rotation - Complex Shape':
                     self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['complex_shape'])
                 elif self.tasks[i] == 'Subtraction - Simple':
-                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
                 elif self.tasks[i] == 'Subtraction - Complex':
-                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
                 elif self.tasks[i] == 'Word Generation':
                     self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
@@ -160,10 +201,6 @@ class OGLWidget(QOpenGLWidget):
                     self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
                 else:
                     self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
-                
-                # update rocket position
-                if self.stage == self.tasks[i]:
-                    self.rocket_positions[i][1] += 0.01
     def gameScene(self):
         if self.stage == 'cue_rest':
             self.drawTextCentered([0,0], [2, 0.5], 'Rest', self.text_color)
@@ -190,9 +227,9 @@ class OGLWidget(QOpenGLWidget):
         elif self.stage == 'cue_Shape Rotation - Complex Shape':
             self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
         elif self.stage == 'cue_Subtraction - Simple':
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
         elif self.stage == 'cue_Subtraction - Complex':
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
+            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
         elif self.stage == 'cue_Word Generation':
             self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % self.word, self.text_color)
         elif self.stage == 'break':
@@ -223,9 +260,9 @@ class OGLWidget(QOpenGLWidget):
                 elif self.tasks[i] == 'Shape Rotation - Complex Shape':
                     self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['complex_shape'])
                 elif self.tasks[i] == 'Subtraction - Simple':
-                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
                 elif self.tasks[i] == 'Subtraction - Complex':
-                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
                 elif self.tasks[i] == 'Word Generation':
                     self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
@@ -266,9 +303,9 @@ class OGLWidget(QOpenGLWidget):
                 elif self.tasks[i] == 'Shape Rotation - Complex Shape':
                     self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.4, 0.4], self.images['complex_shape'])
                 elif self.tasks[i] == 'Subtraction - Simple':
-                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color, scale=0.15)
                 elif self.tasks[i] == 'Subtraction - Complex':
-                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
+                    self.drawTextCentered([self.rocket_positions[i][0],-0.6], [0.3, 0.3], '%d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color, scale=0.15)
                 elif self.tasks[i] == 'Word Generation':
                     self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
@@ -442,15 +479,22 @@ class OGLWidget(QOpenGLWidget):
             self.stage = 'break'
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.break_duration * 1000)
+            self.update_timer.start()
         elif self.stage == 'break':
-            self.current_trial += 1
-            self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
-            if self.current_trial < len(self.trials):
-                self.stage = 'cue_rest'
-                self.stream_outlet.push_sample([self.stage])
-                self.timer.start(self.cue_duration * 1000)
-            else:
-                self.stop()
+            if self.ui.btn_pause.text() == 'Pause':
+                self.current_trial += 1
+                self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
+                if self.current_trial < len(self.trials):
+                    self.stage = 'cue_rest'
+                    self.stream_outlet.push_sample([self.stage])
+                    self.timer.start(self.cue_duration * 1000)
+                else:
+                    self.stop()
+            elif self.ui.btn_pause.text() == 'Pausing...':
+                self.ui.btn_pause.setText('Resume')
+                self.timer.start(16)
+            elif self.ui.btn_pause.text() == 'Resume':
+                self.timer.start(16)
         self.update()
 
     def startGame(self, parent):
@@ -480,8 +524,9 @@ class OGLWidget(QOpenGLWidget):
             self.word = random.choice(self.word_categories)
 
         # LSL
-        self.resolver = ContinuousResolver()
-        self.streams = self.resolver.results()
+        pred = "name='%s'" % (self.ui.lsl_prediction_inlet_lineEdit.text())
+        self.streams = resolve_bypred(pred, timeout=0.0)
+        print('Available Streams: %s' % self.streams)
         self.stream_inlet = None
         for info in self.streams:
             if info.name() == self.ui.lsl_prediction_inlet_lineEdit.text():
@@ -492,6 +537,7 @@ class OGLWidget(QOpenGLWidget):
             print('Cannot find LSL inlet stream: %s' % self.ui.lsl_prediction_inlet_lineEdit.text())
         else:
             self.ui.lsl_stream_label.setText('')
+            self.lsl_pull_timer.start()
             
         self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
         self.stream_outlet = StreamOutlet(self.stream_info)
@@ -533,28 +579,40 @@ class OGLWidget(QOpenGLWidget):
             self.update_timer.start()
             self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
         elif self.stage == self.tasks[self.trials[self.current_trial]]:
-            self.stage = 'break'
-            self.stream_outlet.push_sample([self.stage])
-            self.timer.start(self.break_duration * 1000)
-            self.update_timer.start()
-            self.lsl_pull_timer.stop()
-
-            print('current task = %d' % self.current_task)
-            if self.current_task == self.trials[self.current_trial]:
-                self.current_score += 1
-                self.ui.score_label.setText('Score: %d / %d' % (self.current_score, len(self.trials)))
-        elif self.stage == 'break':
-            self.current_trial += 1
-            self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
-            if self.current_trial < len(self.trials):
-                self.stage = 'cue_rest'
+            if (not self.stream_inlet) or (self.stream_inlet and self.current_task != -1):
+                self.stage = 'break'
                 self.stream_outlet.push_sample([self.stage])
-                self.timer.start(self.cue_duration * 1000)
-            else:
-                self.stop()
+                self.timer.start(self.break_duration * 1000)
+                self.update_timer.start()
+
+                print('current task = %d' % self.current_task)
+                if self.current_task == self.trials[self.current_trial]:
+                    self.current_score += 1
+                    self.ui.score_label.setText('Score: %d / %d' % (self.current_score, len(self.trials)))
+            elif self.stream_inlet and (self.current_task == -1):
+                self.timer.start(16)
+        elif self.stage == 'break':
+            if self.ui.btn_pause.text() == 'Pause':
+                self.current_trial += 1
+                self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
+                if self.current_trial < len(self.trials):
+                    self.stage = 'cue_rest'
+                    self.stream_outlet.push_sample([self.stage])
+                    self.timer.start(self.cue_duration * 1000)
+                else:
+                    self.stop()
+            elif self.ui.btn_pause.text() == 'Pausing...':
+                self.ui.btn_pause.setText('Resume')
+                self.timer.start(16)
+            elif self.ui.btn_pause.text() == 'Resume':
+                self.timer.start(16)
         self.update()
 
     def selectTask(self, taskNum):
+        try:
+            taskNum = int(taskNum)
+        except:
+            return
         if not taskNum in [0,1,2]:
             return
         self.current_task = taskNum
@@ -562,7 +620,9 @@ class OGLWidget(QOpenGLWidget):
 
     def pull_lsl(self):
         if self.stream_inlet:
-            sample, _ = self.stream_inlet.pull_sample()
+            sample, _ = self.stream_inlet.pull_sample(timeout=0.)
+            if not sample: return
+            print('LSL market input: %s' % sample)
             if sample[0].startswith('task='):
                 self.selectTask(sample[0].replace('task=', ''))
 

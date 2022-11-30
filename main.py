@@ -60,6 +60,13 @@ class MainWindow(QMainWindow):
         elif btnName == 'btn_back':
             widgets.oglWidget.stop()
             widgets.stackedWidget.setCurrentWidget(widgets.home_page)
+        elif btnName == 'btn_pause':
+            if widgets.btn_pause.text() == 'Pause':
+                widgets.btn_pause.setText('Pausing...')
+            elif widgets.btn_pause.text() == 'Pausing...':
+                widgets.btn_pause.setText('Pause')
+            elif widgets.btn_pause.text() == 'Resume':
+                widgets.btn_pause.setText('Pause')
 
     def saveSettings(self):
         self.settings_valid = True
