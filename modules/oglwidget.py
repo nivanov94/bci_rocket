@@ -154,10 +154,16 @@ class OGLWidget(QOpenGLWidget):
                     self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
                 # draw rocket
-                if self.rocket_positions[i][1] == 0:
-                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                if i == self.trials[self.current_trial]:
+                    if self.rocket_positions[i][1] == 0:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                    else:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
                 else:
-                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
+                    if self.rocket_positions[i][1] == 0:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo'])
+                    else:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo_blast'])
 
                 # update rocket position
                 if i == self.trials[self.current_trial]:
@@ -197,10 +203,16 @@ class OGLWidget(QOpenGLWidget):
                     self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
                 # draw rocket
-                if self.rocket_positions[i][1] == 0:
-                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                if i == self.trials[self.current_trial]:
+                    if self.rocket_positions[i][1] == 0:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                    else:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
                 else:
-                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
+                    if self.rocket_positions[i][1] == 0:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo'])
+                    else:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo_blast'])
     def gameScene(self):
         if self.stage == 'cue_rest':
             self.drawTextCentered([0,0], [2, 0.5], 'Rest', self.text_color)
@@ -267,10 +279,16 @@ class OGLWidget(QOpenGLWidget):
                     self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
                 # draw rocket
-                if self.rocket_positions[i][1] == 0:
-                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                if i == self.trials[self.current_trial]:
+                    if self.rocket_positions[i][1] == 0:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                    else:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
                 else:
-                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
+                    if self.rocket_positions[i][1] == 0:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo'])
+                    else:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo_blast'])
 
                 # update rocket position
                 if i == self.current_task:
@@ -310,10 +328,16 @@ class OGLWidget(QOpenGLWidget):
                     self.drawTextCentered([self.rocket_positions[i][0],-0.6], [3, 0.3], 'Words: %s' % self.word, self.text_color, scale=0.15)
 
                 # draw rocket
-                if self.rocket_positions[i][1] == 0:
-                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                if i == self.trials[self.current_trial]:
+                    if self.rocket_positions[i][1] == 0:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket'])
+                    else:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
                 else:
-                    self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['rocket_blast'])
+                    if self.rocket_positions[i][1] == 0:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo'])
+                    else:
+                        self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo_blast'])
 
     def drawImageCentered(self, center, size, image):
         # center = [center_x, center_y], size = [size_x, size_y]
