@@ -30,9 +30,9 @@ class OGLWidget(QOpenGLWidget):
 
         self.baseline_cue_duration = 3
         self.baseline_duration = 120
-        self.cue_duration = 2
-        self.task_duration = 4
-        self.break_duration = 2
+        self.cue_duration = 2.5
+        self.task_duration = 5
+        self.break_duration = 7.5
         self.cue_text = 'cue text'
 
         self.scene = ''
@@ -42,7 +42,7 @@ class OGLWidget(QOpenGLWidget):
         self.num_start_complex = 0
         self.num_subtract_complex = 0
         self.word = ''
-        self.word_categories = ['Animals', 'Places', 'Shapes', 'Sport', 'Food']
+        self.word_categories = ['Animals', 'Places', 'Shapes', 'Sports', 'Foods', 'Colours', 'Cities']
         self.current_task = -1
 
         self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
@@ -490,12 +490,12 @@ class OGLWidget(QOpenGLWidget):
                 self.num_subtract_complex = random.randint(3,10)
             elif self.tasks[self.trials[self.current_trial]] == 'Word Generation':
                 self.word = random.choice(self.word_categories)
-            self.stage = 'cue_%s' % self.tasks[self.trials[self.current_trial]]
+            self.stage = 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.cue_duration * 1000)
-        elif self.stage == 'cue_%s' % self.tasks[self.trials[self.current_trial]]:
+        elif self.stage == 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]]):
             self.stage = self.tasks[self.trials[self.current_trial]]
-            self.stream_outlet.push_sample([self.stage])
+            self.stream_outlet.push_sample(['label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.task_duration * 1000)
             self.update_timer.start()
             self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
@@ -593,12 +593,12 @@ class OGLWidget(QOpenGLWidget):
             elif self.tasks[self.trials[self.current_trial]] == 'Word Generation':
                 self.word = random.choice(self.word_categories)
             self.current_task = -1
-            self.stage = 'cue_%s' % self.tasks[self.trials[self.current_trial]]
+            self.stage = 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.cue_duration * 1000)
-        elif self.stage == 'cue_%s' % self.tasks[self.trials[self.current_trial]]:
+        elif self.stage == 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]]):
             self.stage = self.tasks[self.trials[self.current_trial]]
-            self.stream_outlet.push_sample([self.stage])
+            self.stream_outlet.push_sample(['label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.task_duration * 1000)
             self.update_timer.start()
             self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
@@ -647,8 +647,10 @@ class OGLWidget(QOpenGLWidget):
             sample, _ = self.stream_inlet.pull_sample(timeout=0.)
             if not sample: return
             print('LSL market input: %s' % sample)
-            if sample[0].startswith('task='):
-                self.selectTask(sample[0].replace('task=', ''))
+            pred_substr = '_Pred'
+            pred_index = sample[0].find(pred_substr)
+            if pred_index != -1:
+                self.selectTask(sample[0][pred_index+len(pred_substr):])
 
     def stop(self):
         self.timer.stop()
