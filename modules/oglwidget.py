@@ -567,6 +567,7 @@ class OGLWidget(QOpenGLWidget):
         print('Available Streams: %s' % self.streams)
         self.stream_inlet = None
         for info in self.streams:
+            print(info.name())
             if info.name() == self.ui.lsl_prediction_inlet_lineEdit.text():
                 self.stream_inlet = StreamInlet(info)
                 break
@@ -610,7 +611,7 @@ class OGLWidget(QOpenGLWidget):
             self.stage = 'cue_{}'.format(self.tasks[self.trials[self.current_trial]])
             self.stream_outlet.push_sample(['cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.cue_duration * 1000)
-        elif self.stage == 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]]):
+        elif self.stage == 'cue_{}'.format(self.tasks[self.trials[self.current_trial]]):
             self.stage = self.tasks[self.trials[self.current_trial]]
             self.stream_outlet.push_sample(['label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.task_duration * 1000)
@@ -660,8 +661,8 @@ class OGLWidget(QOpenGLWidget):
         if self.stream_inlet:
             sample, _ = self.stream_inlet.pull_sample(timeout=0.)
             if not sample: return
-            print('LSL market input: %s' % sample)
-            pred_substr = '_Pred'
+            print('LSL marker input: %s' % sample)
+            pred_substr = '_Pred:'
             pred_index = sample[0].find(pred_substr)
             if pred_index != -1:
                 self.selectTask(sample[0][pred_index+len(pred_substr):])
