@@ -32,7 +32,7 @@ class OGLWidget(QOpenGLWidget):
         self.baseline_duration = 120
         self.cue_duration = 2.5
         self.task_duration = 5
-        self.break_duration = 7.5
+        self.break_duration = 5
         self.cue_text = 'cue text'
 
         self.scene = ''
@@ -46,6 +46,13 @@ class OGLWidget(QOpenGLWidget):
         self.current_task = -1
 
         self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
+        
+        
+        # setup outlet stream at start - TODO update to allow changing name?
+        self.ui = parent.ui
+        self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
+        self.stream_outlet = StreamOutlet(self.stream_info)
+        print("LSL Marker Outlet Stream Initialized")
 
     def initializeGL(self):
         glClearColor(0,0,0,0)
@@ -411,9 +418,9 @@ class OGLWidget(QOpenGLWidget):
     def startBaseline(self, parent):
         self.ui = parent.ui
 
-        self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
-        self.stream_outlet = StreamOutlet(self.stream_info)
-        print("LSL Marker Outlet Stream Initialized")
+        #self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
+        #self.stream_outlet = StreamOutlet(self.stream_info)
+        #print("LSL Marker Outlet Stream Initialized")
         for i in range(3):
             self.stream_outlet.push_sample(['initialize baseline'])
 
@@ -462,9 +469,9 @@ class OGLWidget(QOpenGLWidget):
         if 'Word Generation' in self.tasks:
             self.word = random.choice(self.word_categories)
 
-        self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
-        self.stream_outlet = StreamOutlet(self.stream_info)
-        print("LSL Marker Outlet Stream Initialized")
+        #self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
+        #self.stream_outlet = StreamOutlet(self.stream_info)
+        #print("LSL Marker Outlet Stream Initialized")
         for i in range(3):
             self.stream_outlet.push_sample(['initialize training'])
 
@@ -477,11 +484,14 @@ class OGLWidget(QOpenGLWidget):
     def training_timer_timeout(self):
         self.timer.stop()
         self.update_timer.stop()
+        print("Current stage: ", self.stage, end='\t')
         if self.stage == 'cue_rest':
+            # cue_rest -> rest
             self.stage = 'rest'
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.task_duration * 1000)
         elif self.stage == 'rest':
+            # rest -> cue task
             if self.tasks[self.trials[self.current_trial]] == 'Subtraction - Simple':
                 self.num_start_simple = random.randint(51, 100)
                 self.num_subtract_simple = random.randint(3,10)
@@ -490,21 +500,24 @@ class OGLWidget(QOpenGLWidget):
                 self.num_subtract_complex = random.randint(3,10)
             elif self.tasks[self.trials[self.current_trial]] == 'Word Generation':
                 self.word = random.choice(self.word_categories)
-            self.stage = 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])
-            self.stream_outlet.push_sample([self.stage])
+            self.stage = 'cue_{}'.format(self.tasks[self.trials[self.current_trial]])
+            self.stream_outlet.push_sample(['cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.cue_duration * 1000)
-        elif self.stage == 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]]):
+        elif self.stage == 'cue_{}'.format(self.tasks[self.trials[self.current_trial]]):
+            # cue task -> task
             self.stage = self.tasks[self.trials[self.current_trial]]
             self.stream_outlet.push_sample(['label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.task_duration * 1000)
             self.update_timer.start()
             self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
         elif self.stage == self.tasks[self.trials[self.current_trial]]:
+            # task -> break
             self.stage = 'break'
             self.stream_outlet.push_sample([self.stage])
             self.timer.start(self.break_duration * 1000)
             self.update_timer.start()
         elif self.stage == 'break':
+            # break -> Pause/cue rest
             if self.ui.btn_pause.text() == 'Pause':
                 self.current_trial += 1
                 self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
@@ -519,6 +532,7 @@ class OGLWidget(QOpenGLWidget):
                 self.timer.start(16)
             elif self.ui.btn_pause.text() == 'Resume':
                 self.timer.start(16)
+        print("Next state : ", self.stage)
         self.update()
 
     def startGame(self, parent):
@@ -563,9 +577,9 @@ class OGLWidget(QOpenGLWidget):
             self.ui.lsl_stream_label.setText('')
             self.lsl_pull_timer.start()
             
-        self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
-        self.stream_outlet = StreamOutlet(self.stream_info)
-        print("LSL Marker Outlet Stream Initialized")
+        #self.stream_info = StreamInfo(self.ui.lsl_marker_outlet_lineEdit.text(), 'Markers', 1, 0, 'string', 'bci_hoops')
+        #self.stream_outlet = StreamOutlet(self.stream_info)
+        #print("LSL Marker Outlet Stream Initialized")
         for i in range(3):
             self.stream_outlet.push_sample(['initialize game'])
 
@@ -593,8 +607,8 @@ class OGLWidget(QOpenGLWidget):
             elif self.tasks[self.trials[self.current_trial]] == 'Word Generation':
                 self.word = random.choice(self.word_categories)
             self.current_task = -1
-            self.stage = 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])
-            self.stream_outlet.push_sample([self.stage])
+            self.stage = 'cue_{}'.format(self.tasks[self.trials[self.current_trial]])
+            self.stream_outlet.push_sample(['cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.cue_duration * 1000)
         elif self.stage == 'cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]]):
             self.stage = self.tasks[self.trials[self.current_trial]]
