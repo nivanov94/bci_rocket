@@ -4,7 +4,7 @@ from PyQt5.QtGui import QPainter, QOpenGLTexture, QImage, QColor, QFont
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import os, copy, math, random
-from pylsl import StreamInfo, StreamOutlet, StreamInlet, ContinuousResolver, resolve_bypred
+from pylsl import StreamInfo, StreamOutlet, StreamInlet, ContinuousResolver, resolve_bypred, local_clock
 import numpy as np
 
 class OGLWidget(QOpenGLWidget):
@@ -100,32 +100,32 @@ class OGLWidget(QOpenGLWidget):
             self.drawTextCentered([0,0], [2, 0.5], 'Rest', self.text_color)
         elif self.stage == 'rest':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-        elif self.stage == 'cue_Auditory Imagery':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['music'])
-        elif self.stage == 'cue_Facial Imagery - Celebrity':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_celebrity'])
-            self.drawTextCentered([0,0.35], [2, 0.5], 'Celebrity', self.text_color)
-        elif self.stage == 'cue_Facial Imagery - Family Member':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_family'])
-            self.drawTextCentered([0,0.35], [2, 0.5], 'Family member', self.text_color)
-        elif self.stage == 'cue_Motor Imagery - Foot':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['foot'])
-        elif self.stage == 'cue_Motor Imagery - Left Hand':
-            self.drawImageCentered([0,0], [0.8, 0.8], self.images['left_hand'])
-        elif self.stage == 'cue_Motor Imagery - Right Hand':
-            self.drawImageCentered([0,0], [0.8, 0.8], self.images['right_hand'])
-        elif self.stage == 'cue_Motor Imagery - Tongue':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['tongue'])
-        elif self.stage == 'cue_Shape Rotation - Cube':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['cube'])
-        elif self.stage == 'cue_Shape Rotation - Complex Shape':
-            self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
-        elif self.stage == 'cue_Subtraction - Simple':
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
-        elif self.stage == 'cue_Subtraction - Complex':
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
-        elif self.stage == 'cue_Word Generation':
-            self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % self.word, self.text_color)
+        # elif self.stage == 'cue_Auditory Imagery':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['music'])
+        # elif self.stage == 'cue_Facial Imagery - Celebrity':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_celebrity'])
+        #     self.drawTextCentered([0,0.35], [2, 0.5], 'Celebrity', self.text_color)
+        # elif self.stage == 'cue_Facial Imagery - Family Member':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_family'])
+        #     self.drawTextCentered([0,0.35], [2, 0.5], 'Family member', self.text_color)
+        # elif self.stage == 'cue_Motor Imagery - Foot':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['foot'])
+        # elif self.stage == 'cue_Motor Imagery - Left Hand':
+        #     self.drawImageCentered([0,0], [0.8, 0.8], self.images['left_hand'])
+        # elif self.stage == 'cue_Motor Imagery - Right Hand':
+        #     self.drawImageCentered([0,0], [0.8, 0.8], self.images['right_hand'])
+        # elif self.stage == 'cue_Motor Imagery - Tongue':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['tongue'])
+        # elif self.stage == 'cue_Shape Rotation - Cube':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['cube'])
+        # elif self.stage == 'cue_Shape Rotation - Complex Shape':
+        #     self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
+        # elif self.stage == 'cue_Subtraction - Simple':
+        #     self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
+        # elif self.stage == 'cue_Subtraction - Complex':
+        #     self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
+        # elif self.stage == 'cue_Word Generation':
+        #     self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % self.word, self.text_color)
         elif self.stage == 'break':
             for i in range(3):
                 # draw prompts
@@ -178,7 +178,7 @@ class OGLWidget(QOpenGLWidget):
         else:
             for i in range(3):
                 # draw prompts
-                if self.stage == self.tasks[i]:
+                if self.stage == self.tasks[i] or (self.stage.startswith('cue_') and self.stage.replace('cue_','') == self.tasks[i] and local_clock() % 0.6 < 0.3):
                     self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline_green'])
                 else:
                     self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline'])
@@ -220,37 +220,38 @@ class OGLWidget(QOpenGLWidget):
                         self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo'])
                     else:
                         self.drawImageCentered(self.rocket_positions[i], [0.5, 0.5], self.images['ufo_blast'])
+
     def gameScene(self):
         if self.stage == 'cue_rest':
             self.drawTextCentered([0,0], [2, 0.5], 'Rest', self.text_color)
         elif self.stage == 'rest':
             self.drawImageCentered([0,0], [0.5, 0.5], self.images['fixation'])
-        elif self.stage == 'cue_Auditory Imagery':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['music'])
-        elif self.stage == 'cue_Facial Imagery - Celebrity':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_celebrity'])
-            self.drawTextCentered([0,0.35], [2, 0.5], 'Celebrity', self.text_color)
-        elif self.stage == 'cue_Facial Imagery - Family Member':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_family'])
-            self.drawTextCentered([0,0.35], [2, 0.5], 'Family member', self.text_color)
-        elif self.stage == 'cue_Motor Imagery - Foot':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['foot'])
-        elif self.stage == 'cue_Motor Imagery - Left Hand':
-            self.drawImageCentered([0,0], [0.8, 0.8], self.images['left_hand'])
-        elif self.stage == 'cue_Motor Imagery - Right Hand':
-            self.drawImageCentered([0,0], [0.8, 0.8], self.images['right_hand'])
-        elif self.stage == 'cue_Motor Imagery - Tongue':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['tongue'])
-        elif self.stage == 'cue_Shape Rotation - Cube':
-            self.drawImageCentered([0,0], [0.5, 0.5], self.images['cube'])
-        elif self.stage == 'cue_Shape Rotation - Complex Shape':
-            self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
-        elif self.stage == 'cue_Subtraction - Simple':
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
-        elif self.stage == 'cue_Subtraction - Complex':
-            self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
-        elif self.stage == 'cue_Word Generation':
-            self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % self.word, self.text_color)
+        # elif self.stage == 'cue_Auditory Imagery':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['music'])
+        # elif self.stage == 'cue_Facial Imagery - Celebrity':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_celebrity'])
+        #     self.drawTextCentered([0,0.35], [2, 0.5], 'Celebrity', self.text_color)
+        # elif self.stage == 'cue_Facial Imagery - Family Member':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['face_family'])
+        #     self.drawTextCentered([0,0.35], [2, 0.5], 'Family member', self.text_color)
+        # elif self.stage == 'cue_Motor Imagery - Foot':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['foot'])
+        # elif self.stage == 'cue_Motor Imagery - Left Hand':
+        #     self.drawImageCentered([0,0], [0.8, 0.8], self.images['left_hand'])
+        # elif self.stage == 'cue_Motor Imagery - Right Hand':
+        #     self.drawImageCentered([0,0], [0.8, 0.8], self.images['right_hand'])
+        # elif self.stage == 'cue_Motor Imagery - Tongue':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['tongue'])
+        # elif self.stage == 'cue_Shape Rotation - Cube':
+        #     self.drawImageCentered([0,0], [0.5, 0.5], self.images['cube'])
+        # elif self.stage == 'cue_Shape Rotation - Complex Shape':
+        #     self.drawImageCentered([0,-0.1], [0.8, 0.8], self.images['complex_shape'])
+        # elif self.stage == 'cue_Subtraction - Simple':
+        #     self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_simple, self.num_subtract_simple, self.num_subtract_simple), self.text_color)
+        # elif self.stage == 'cue_Subtraction - Complex':
+        #     self.drawTextCentered([0,0], [2, 0.5], 'Mental Math: %d - %d - %d = ?' % (self.num_start_complex, self.num_subtract_complex, self.num_subtract_complex), self.text_color)
+        # elif self.stage == 'cue_Word Generation':
+        #     self.drawTextCentered([0,0], [2, 0.5], 'Words: %s' % self.word, self.text_color)
         elif self.stage == 'break':
             for i in range(3):
                 # draw prompts
@@ -303,7 +304,7 @@ class OGLWidget(QOpenGLWidget):
         else:
             for i in range(3):
                 # draw prompts
-                if self.stage == self.tasks[i]:
+                if self.stage == self.tasks[i] or (self.stage.startswith('cue_') and self.stage.replace('cue_','') == self.tasks[i] and local_clock() % 0.6 < 0.3):
                     self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline_green'])
                 else:
                     self.drawImageCentered([self.rocket_positions[i][0],-0.6], [0.7, 0.7], self.images['dotted_outline'])
@@ -503,6 +504,7 @@ class OGLWidget(QOpenGLWidget):
             self.stage = 'cue_{}'.format(self.tasks[self.trials[self.current_trial]])
             self.stream_outlet.push_sample(['cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.cue_duration * 1000)
+            self.update_timer.start()
         elif self.stage == 'cue_{}'.format(self.tasks[self.trials[self.current_trial]]):
             # cue task -> task
             self.stage = self.tasks[self.trials[self.current_trial]]
@@ -611,6 +613,7 @@ class OGLWidget(QOpenGLWidget):
             self.stage = 'cue_{}'.format(self.tasks[self.trials[self.current_trial]])
             self.stream_outlet.push_sample(['cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.cue_duration * 1000)
+            self.update_timer.start()
         elif self.stage == 'cue_{}'.format(self.tasks[self.trials[self.current_trial]]):
             self.stage = self.tasks[self.trials[self.current_trial]]
             self.stream_outlet.push_sample(['label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
