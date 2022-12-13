@@ -46,6 +46,9 @@ class OGLWidget(QOpenGLWidget):
         self.current_task = -1
 
         self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
+
+        self.force_pause = False
+        self.nack_count = 0
         
         
         # setup outlet stream at start - TODO update to allow changing name?
@@ -620,8 +623,14 @@ class OGLWidget(QOpenGLWidget):
             self.timer.start(self.task_duration * 1000)
             self.update_timer.start()
             self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
+            
+            # reset flags for next stage
+            self.nack_count = 0
+            self.force_pause = False
         elif self.stage == self.tasks[self.trials[self.current_trial]]:
-            if (not self.stream_inlet) or (self.stream_inlet and self.current_task != -1):
+            if ((not self.stream_inlet) or 
+                (self.stream_inlet and self.current_task != -1) or
+                self.nack_count > 5):
                 self.stage = 'break'
                 self.stream_outlet.push_sample([self.stage])
                 self.timer.start(self.break_duration * 1000)
@@ -631,10 +640,20 @@ class OGLWidget(QOpenGLWidget):
                 if self.current_task == self.trials[self.current_trial]:
                     self.current_score += 1
                     self.ui.score_label.setText('Score: %d / %d' % (self.current_score, len(self.trials)))
+
+                if self.nack_count > 5:
+                    print("Failed to get input from LSL inlet.")
+                    self.force_pause = True
+
+                if self.current_task == -2: 
+                    print("Trial flagged as artifact.")
+                    self.force_pause = True
+
             elif self.stream_inlet and (self.current_task == -1):
                 self.timer.start(16)
+                self.nack_count += 1
         elif self.stage == 'break':
-            if self.ui.btn_pause.text() == 'Pause':
+            if self.ui.btn_pause.text() == 'Pause' and not self.force_pause:
                 self.current_trial += 1
                 self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
                 if self.current_trial < len(self.trials):
@@ -643,7 +662,7 @@ class OGLWidget(QOpenGLWidget):
                     self.timer.start(self.cue_duration * 1000)
                 else:
                     self.stop()
-            elif self.ui.btn_pause.text() == 'Pausing...':
+            elif self.ui.btn_pause.text() == 'Pausing...' or self.force_pause:
                 self.ui.btn_pause.setText('Resume')
                 self.timer.start(16)
             elif self.ui.btn_pause.text() == 'Resume':
