@@ -630,7 +630,7 @@ class OGLWidget(QOpenGLWidget):
         elif self.stage == self.tasks[self.trials[self.current_trial]]:
             if ((not self.stream_inlet) or 
                 (self.stream_inlet and self.current_task != -1) or
-                self.nack_count > 5):
+                self.nack_count > 25):
                 self.stage = 'break'
                 self.stream_outlet.push_sample([self.stage])
                 self.timer.start(self.break_duration * 1000)
@@ -641,7 +641,7 @@ class OGLWidget(QOpenGLWidget):
                     self.current_score += 1
                     self.ui.score_label.setText('Score: %d / %d' % (self.current_score, len(self.trials)))
 
-                if self.nack_count > 5:
+                if self.nack_count > 25:
                     print("Failed to get input from LSL inlet.")
                     self.force_pause = True
 
@@ -663,6 +663,7 @@ class OGLWidget(QOpenGLWidget):
                 else:
                     self.stop()
             elif self.ui.btn_pause.text() == 'Pausing...' or self.force_pause:
+                self.force_pause = False
                 self.ui.btn_pause.setText('Resume')
                 self.timer.start(16)
             elif self.ui.btn_pause.text() == 'Resume':
