@@ -42,7 +42,7 @@ class OGLWidget(QOpenGLWidget):
         self.num_start_complex = 0
         self.num_subtract_complex = 0
         self.word = ''
-        self.word_categories = ['Animals', 'Places', 'Shapes', 'Sports', 'Foods', 'Colours', 'Cities']
+        self.word_categories = ['Animals', 'Places', 'Shapes', 'Sports', 'Foods', 'Colours', 'Cities', 'Musical Instruments']
         self.current_task = -1
 
         self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
@@ -508,13 +508,13 @@ class OGLWidget(QOpenGLWidget):
             self.stream_outlet.push_sample(['cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.cue_duration * 1000)
             self.update_timer.start()
+            self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
         elif self.stage == 'cue_{}'.format(self.tasks[self.trials[self.current_trial]]):
             # cue task -> task
             self.stage = self.tasks[self.trials[self.current_trial]]
             self.stream_outlet.push_sample(['label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.task_duration * 1000)
             self.update_timer.start()
-            self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
         elif self.stage == self.tasks[self.trials[self.current_trial]]:
             # task -> break
             self.stage = 'break'
@@ -617,12 +617,12 @@ class OGLWidget(QOpenGLWidget):
             self.stream_outlet.push_sample(['cue_label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.cue_duration * 1000)
             self.update_timer.start()
+            self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
         elif self.stage == 'cue_{}'.format(self.tasks[self.trials[self.current_trial]]):
             self.stage = self.tasks[self.trials[self.current_trial]]
             self.stream_outlet.push_sample(['label_{}_name_{}'.format(self.trials[self.current_trial], self.tasks[self.trials[self.current_trial]])])
             self.timer.start(self.task_duration * 1000)
             self.update_timer.start()
-            self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
             
             # reset flags for next stage
             self.nack_count = 0
@@ -630,7 +630,7 @@ class OGLWidget(QOpenGLWidget):
         elif self.stage == self.tasks[self.trials[self.current_trial]]:
             if ((not self.stream_inlet) or 
                 (self.stream_inlet and self.current_task != -1) or
-                self.nack_count > 25):
+                self.nack_count > 400):
                 self.stage = 'break'
                 self.stream_outlet.push_sample([self.stage])
                 self.timer.start(self.break_duration * 1000)
@@ -641,7 +641,7 @@ class OGLWidget(QOpenGLWidget):
                     self.current_score += 1
                     self.ui.score_label.setText('Score: %d / %d' % (self.current_score, len(self.trials)))
 
-                if self.nack_count > 25:
+                if self.nack_count > 400:
                     print("Failed to get input from LSL inlet.")
                     self.force_pause = True
 
