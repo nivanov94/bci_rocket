@@ -489,7 +489,6 @@ class OGLWidget(QOpenGLWidget):
     def training_timer_timeout(self):
         self.timer.stop()
         self.update_timer.stop()
-        print("Current stage: ", self.stage, end='\t')
         if self.stage == 'cue_rest':
             # cue_rest -> rest
             self.stage = 'rest'
@@ -538,7 +537,6 @@ class OGLWidget(QOpenGLWidget):
                 self.timer.start(16)
             elif self.ui.btn_pause.text() == 'Resume':
                 self.timer.start(16)
-        print("Next state : ", self.stage)
         self.update()
 
     def startGame(self, parent):
@@ -552,7 +550,7 @@ class OGLWidget(QOpenGLWidget):
         self.trials = [0,1,2] * math.ceil(num_trials / 3)
         self.trials = self.trials[:num_trials]
         random.shuffle(self.trials)
-        print('trials: ', self.trials)
+        #print('trials: ', self.trials)
         self.current_trial = 0
         self.current_score = 0
         self.ui.trial_label.setText('Trial: %d / %d' % (self.current_trial + 1, len(self.trials)))
@@ -570,7 +568,7 @@ class OGLWidget(QOpenGLWidget):
         # LSL
         pred = "name='%s'" % (self.ui.lsl_prediction_inlet_lineEdit.text())
         self.streams = resolve_bypred(pred, timeout=0.0)
-        print('Available Streams: %s' % self.streams)
+        #print('Available Streams: %s' % self.streams)
         self.stream_inlet = None
         for info in self.streams:
             print(info.name())
