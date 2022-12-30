@@ -31,8 +31,8 @@ class OGLWidget(QOpenGLWidget):
         self.baseline_cue_duration = 3
         self.baseline_duration = 120
         self.cue_duration = 2.5
-        self.task_duration = 5
-        self.break_duration = 5
+        self.task_duration = 4.5
+        self.break_duration = 4
         self.cue_text = 'cue text'
 
         self.scene = ''
@@ -42,7 +42,8 @@ class OGLWidget(QOpenGLWidget):
         self.num_start_complex = 0
         self.num_subtract_complex = 0
         self.word = ''
-        self.word_categories = ['Animals', 'Places', 'Shapes', 'Sports', 'Foods', 'Colours', 'Cities', 'Musical Instruments']
+        self.word_categories = ['Animals', 'Places', 'Shapes', 'Sports', 'Foods', 'Colours', 'Cities', 'Musical\nInstruments', 'Office\nItems', 'Kitchen\nItems']
+
         self.current_task = -1
 
         self.rocket_positions = np.array([[-0.5,0], [0,0], [0.5, 0]])
@@ -465,11 +466,11 @@ class OGLWidget(QOpenGLWidget):
         self.ui.score_label.setText('')
 
         if 'Subtraction - Simple' in self.tasks:
-            self.num_start_simple = random.randint(51, 100)
-            self.num_subtract_simple = random.randint(3,10)
+            self.num_start_simple = random.randint(31, 200)
+            self.num_subtract_simple = random.randint(2,10)
         if 'Subtraction - Complex' in self.tasks:
-            self.num_start_complex = random.randint(100, 200)
-            self.num_subtract_complex = random.randint(3,10)
+            self.num_start_complex = random.randint(31, 200)
+            self.num_subtract_complex = random.randint(11,15)
         if 'Word Generation' in self.tasks:
             self.word = random.choice(self.word_categories)
 
@@ -497,11 +498,11 @@ class OGLWidget(QOpenGLWidget):
         elif self.stage == 'rest':
             # rest -> cue task
             if self.tasks[self.trials[self.current_trial]] == 'Subtraction - Simple':
-                self.num_start_simple = random.randint(51, 100)
-                self.num_subtract_simple = random.randint(3,10)
+                self.num_start_simple = random.randint(31, 200)
+                self.num_subtract_simple = random.randint(2,10)
             elif self.tasks[self.trials[self.current_trial]] == 'Subtraction - Complex':
-                self.num_start_complex = random.randint(100, 200)
-                self.num_subtract_complex = random.randint(3,10)
+                self.num_start_complex = random.randint(31, 200)
+                self.num_subtract_complex = random.randint(11,15)
             elif self.tasks[self.trials[self.current_trial]] == 'Word Generation':
                 self.word = random.choice(self.word_categories)
             self.stage = 'cue_{}'.format(self.tasks[self.trials[self.current_trial]])
@@ -558,11 +559,11 @@ class OGLWidget(QOpenGLWidget):
         self.ui.score_label.setText('Score: %d / %d' % (self.current_score, len(self.trials)))
 
         if 'Subtraction - Simple' in self.tasks:
-            self.num_start_simple = random.randint(51, 100)
-            self.num_subtract_simple = random.randint(3,10)
+            self.num_start_simple = random.randint(31, 200)
+            self.num_subtract_simple = random.randint(2,10)
         if 'Subtraction - Complex' in self.tasks:
-            self.num_start_complex = random.randint(100, 200)
-            self.num_subtract_complex = random.randint(3,10)
+            self.num_start_complex = random.randint(31, 200)
+            self.num_subtract_complex = random.randint(11,15)
         if 'Word Generation' in self.tasks:
             self.word = random.choice(self.word_categories)
 
@@ -605,11 +606,11 @@ class OGLWidget(QOpenGLWidget):
             self.timer.start(self.task_duration * 1000)
         elif self.stage == 'rest':
             if self.tasks[self.trials[self.current_trial]] == 'Subtraction - Simple':
-                self.num_start_simple = random.randint(51, 100)
-                self.num_subtract_simple = random.randint(3,10)
+                self.num_start_simple = random.randint(31, 100)
+                self.num_subtract_simple = random.randint(2,10)
             elif self.tasks[self.trials[self.current_trial]] == 'Subtraction - Complex':
-                self.num_start_complex = random.randint(100, 200)
-                self.num_subtract_complex = random.randint(3,10)
+                self.num_start_complex = random.randint(31, 200)
+                self.num_subtract_complex = random.randint(11,15)
             elif self.tasks[self.trials[self.current_trial]] == 'Word Generation':
                 self.word = random.choice(self.word_categories)
             self.current_task = -1
